@@ -63,7 +63,7 @@ class QuestionController extends Controller
             }
         }
 
-        return to_route($link);
+        return redirect($link);
     }
 
     /**
