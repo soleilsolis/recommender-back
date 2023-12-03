@@ -91,10 +91,9 @@ export default function Show({ exam }: Props) {
 						<Link href="/exams" className="opacity-60">
 							<span>Exams</span>
 						</Link>
-                        <Link href="/exam/79">
+						<Link href={`/exam/${exam.id}`}>
 							<span>{exam.id}</span>
 						</Link>
-	
 					</Breadcrumbs>
 					<Typography variant="h2" color="blue-gray">
 						{exam.name} - ({exam.attempts} Attempts){' '}
@@ -120,7 +119,7 @@ export default function Show({ exam }: Props) {
 						Questions
 					</Typography>
 
-					{categories.length > 0 ?
+					{categories.length > 0 ? (
 						questions.map(
 							(
 								{ id, value, category_id, type, answers },
@@ -342,13 +341,21 @@ export default function Show({ exam }: Props) {
 									</Card>
 								</div>
 							),
-						) : (
-                            <Typography variant='lead' className='mt-2'>
-                                To add Questions, go to the <Link className='text-blue-500' href={`/exam/edit/${exam.id}#categories`}> Edit
-                                </Link> page to add <b>Categories</b>
-                            </Typography>
-                        )}
-				</div>  
+						)
+					) : (
+						<Typography variant="lead" className="mt-2">
+							To add Questions, go to the{' '}
+							<Link
+								className="text-blue-500"
+								href={`/exam/edit/${exam.id}#categories`}
+							>
+								{' '}
+								Edit
+							</Link>{' '}
+							page to add <b>Categories</b>
+						</Typography>
+					)}
+				</div>
 			</div>
 
 			<div className="fixed bottom-10 right-10">
