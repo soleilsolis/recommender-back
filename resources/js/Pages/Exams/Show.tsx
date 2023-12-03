@@ -18,6 +18,7 @@ import {
 	Select,
 	Option,
 	Checkbox,
+	Button,
 } from '@material-tailwind/react';
 import AppLayout from '@/Layouts/AppLayout';
 
@@ -51,7 +52,7 @@ export default function Show({ exam }: Props) {
 	const blankQuestion = {
 		id: null,
 		value: '',
-		category_id: null,
+		category_id: categories.length > 0 ? categories[0].id : null,
 		exam_id: exam.id,
 		type: 'Multiple Choice',
 		answers: [blankAnswer],
@@ -59,7 +60,7 @@ export default function Show({ exam }: Props) {
 	};
 
 	const [questions, setQuestions] = useState(
-		exam.questions.length === 0 ? blankQuestion : exam.questions,
+		exam.questions.length === 0 ? [blankQuestion] : exam.questions,
 	);
 
 	const types = ['Multiple Choice', 'True or False', 'Written'];
@@ -67,7 +68,7 @@ export default function Show({ exam }: Props) {
 
 	const form = useForm({
 		questions,
-        delete: new Array,
+		delete: new Array(),
 	});
 
 	const createQuestion = () => {
@@ -90,10 +91,16 @@ export default function Show({ exam }: Props) {
 						<Link href="/exams" className="opacity-60">
 							<span>Exams</span>
 						</Link>
-						<a href="#">Breadcrumbs</a>
+                        <Link href="/exam/79">
+							<span>{exam.id}</span>
+						</Link>
+	
 					</Breadcrumbs>
 					<Typography variant="h2" color="blue-gray">
-						{exam.name} - ({exam.attempts} Attempts)
+						{exam.name} - ({exam.attempts} Attempts){' '}
+						<Link href={`/exam/edit/${exam.id}`}>
+							<Button size="sm">Edit</Button>
+						</Link>
 					</Typography>
 					<Typography
 						variant="h6"
@@ -113,216 +120,235 @@ export default function Show({ exam }: Props) {
 						Questions
 					</Typography>
 
-					{questions.map(
-						({ id, value, category_id, type, answers }, index) => (
-							<div className="my-6 grid lg:grid-cols-5 grid-cols-1 md:gap-4 gap-y-4">
-								<Card className="col-span-3">
-									<CardBody>
-										<div className="grid grid-cols-12 gap-5">
-											<div className="col-span-12 flex items-center justify-between">
-												<Typography variant="h5">
-													#{index + 1}
-												</Typography>
-												<div>
-													<IconButton
-														variant="text"
-														color="green"
-														className="rounded-full"
-														onClick={() => {
-															questions.push(
-																blankQuestion,
-															),
+					{categories.length > 0 ?
+						questions.map(
+							(
+								{ id, value, category_id, type, answers },
+								index,
+							) => (
+								<div className="my-6 grid lg:grid-cols-5 grid-cols-1 md:gap-4 gap-y-4">
+									<Card className="col-span-3">
+										<CardBody>
+											<div className="grid grid-cols-12 gap-5">
+												<div className="col-span-12 flex items-center justify-between">
+													<Typography variant="h5">
+														#{index + 1}
+													</Typography>
+													<div>
+														<IconButton
+															variant="text"
+															color="green"
+															className="rounded-full"
+															onClick={() => {
+																questions.push(
+																	blankQuestion,
+																),
+																	xxx(x + 1);
+															}}
+														>
+															<PlusIcon className="w-5 h-5" />
+														</IconButton>
+														<IconButton
+															variant="text"
+															color="red"
+															className="rounded-full"
+															disabled={
+																questions.length ===
+																1
+															}
+															onClick={() => {
+																delete questions[
+																	index
+																];
+																form.data.delete.push(
+																	index,
+																);
 																xxx(x + 1);
-														}}
-													>
-														<PlusIcon className="w-5 h-5" />
-													</IconButton>
-													<IconButton
-														variant="text"
-														color="red"
-														className="rounded-full"
-														disabled={
-															questions.length ===
-															1
-														}
-                                                        onClick={() => {
-                                                            delete questions[index]
-                                                            form.data.delete.push(index)
-                                                            xxx(x+1)
-                                                        }}
-													>
-														<TrashIcon className="w-5 h-5" />
-													</IconButton>
+															}}
+														>
+															<TrashIcon className="w-5 h-5" />
+														</IconButton>
+													</div>
 												</div>
-											</div>
-											<div className="col-span-12">
-												<Textarea
-													className="h-full"
-													label="Question"
-													onChange={event =>
-														(questions[index][
-															'value'
-														] =
-															event.currentTarget.value)
-													}
-													onLoad={() =>
-														this.closest(
-															'div',
-														).classList.add(
-															'h-full',
-														)
-													}
-												>
-													{value}
-												</Textarea>
-												<div className="mt-5">
-													<Select
-														label="Category"
-														value={category_id}
+												<div className="col-span-12">
+													<Textarea
+														className="h-full"
+														label="Question"
 														onChange={event =>
 															(questions[index][
-																'category'
-															] = event)
+																'value'
+															] =
+																event.currentTarget.value)
+														}
+														onLoad={() =>
+															this.closest(
+																'div',
+															).classList.add(
+																'h-full',
+															)
 														}
 													>
-														{categories.map(
-															category => (
+														{value}
+													</Textarea>
+													<div className="mt-5">
+														<Select
+															label="Category"
+															value={category_id}
+															onChange={event =>
+																(questions[
+																	index
+																]['category'] =
+																	event)
+															}
+														>
+															{categories.map(
+																category => (
+																	<Option
+																		value={
+																			category.id
+																		}
+																	>
+																		{
+																			category.name
+																		}
+																	</Option>
+																),
+															)}
+														</Select>
+													</div>
+
+													<div className="mt-5">
+														<Select
+															label="Answer Type"
+															value={type}
+															onChange={event =>
+																(questions[
+																	index
+																]['type'] =
+																	event)
+															}
+														>
+															{types.map(type => (
 																<Option
-																	value={
-																		category.id
-																	}
+																	value={type}
 																>
-																	{
-																		category.name
-																	}
+																	{type}
 																</Option>
-															),
-														)}
-													</Select>
+															))}
+														</Select>
+													</div>
 												</div>
 
-												<div className="mt-5">
-													<Select
-														label="Answer Type"
-														value={type}
-														onChange={event =>
-															(questions[index][
-																'type'
-															] = event)
-														}
-													>
-														{types.map(type => (
-															<Option
-																value={type}
-															>
-																{type}
-															</Option>
-														))}
-													</Select>
-												</div>
+												<div className="md:col-span-3 col-span-12"></div>
 											</div>
+										</CardBody>
+									</Card>
 
-											<div className="md:col-span-3 col-span-12"></div>
-										</div>
-									</CardBody>
-								</Card>
+									<Card className="col-span-2 p-0 overflow-y-scroll">
+										<CardBody className="h-[300px] ">
+											<table className="w-full mt-5 md:h-max mb-6 table-fixed border-separate border-spacing-y-2.5">
+												<thead>
+													<tr>
+														<th className="w-[20%]">
+															Correct
+														</th>
+														<th className="w-[60%]">
+															Value
+														</th>
+														<th className="w-[20%]">
+															Actions
+														</th>
+													</tr>
+												</thead>
+												<tbody>
+													{answers.map(
+														(
+															answer,
+															answerIndex,
+														) => (
+															<tr>
+																<td>
+																	<Checkbox
+																		crossOrigin={
+																			undefined
+																		}
+																		onChange={event => {
+																			answer.correct =
+																				!answer.correct;
+																			event.currentTarget.checked =
+																				answer.correct;
+																		}}
+																	/>
+																</td>
+																<td>
+																	<Input
+																		crossOrigin={
+																			undefined
+																		}
+																		onChange={event => {
+																			answer.value =
+																				event.currentTarget.value;
 
-								<Card className="col-span-2 p-0 overflow-y-scroll">
-									<CardBody className="h-[300px] ">
-										<table className="w-full mt-5 md:h-max mb-6 table-fixed border-separate border-spacing-y-2.5">
-											<thead>
-												<tr>
-													<th className="w-[20%]">
-														Correct
-													</th>
-													<th className="w-[60%]">
-														Value
-													</th>
-													<th className="w-[20%]">
-														Actions
-													</th>
-												</tr>
-											</thead>
-											<tbody>
-												{answers.map(
-													(answer, answerIndex) => (
-														<tr>
-															<td>
-																<Checkbox
-																	crossOrigin={
-																		undefined
-																	}
-																	onChange={event => {
-																		answer.correct =
-																			!answer.correct;
-																		event.currentTarget.checked =
-																			answer.correct;
-																	}}
-																/>
-															</td>
-															<td>
-																<Input
-																	crossOrigin={
-																		undefined
-																	}
-																	onChange={event => {
-																		answer.value =
-																			event.currentTarget.value;
-
-																		console.log(
-																			answer.value,
-																		);
-																	}}
-																/>
-															</td>
-															<td>
-																<IconButton
-																	variant="text"
-																	color="green"
-																	className="rounded-full"
-																	onClick={() => {
-																		questions[
-																			index
-																		][
-																			'answers'
-																		].push({
-																			id: null,
-																			value: '',
-																			correct: 0,
-																			delete: false,
-																		}),
-																			xxx(
-																				x +
-																					1,
+																			console.log(
+																				answer.value,
 																			);
-																	}}
-																>
-																	<PlusIcon className="w-5 h-5" />
-																</IconButton>
-																<IconButton
-																	variant="text"
-																	color="red"
-																	className="rounded-full"
-																	disabled={
-																		answers.length ===
-																		1
-																	}
-                                                                    
-																>
-																	<TrashIcon className="w-5 h-5" />
-																</IconButton>
-															</td>
-														</tr>
-													),
-												)}
-											</tbody>
-										</table>
-									</CardBody>
-								</Card>
-							</div>
-						),
-					)}
-				</div>
+																		}}
+																	/>
+																</td>
+																<td>
+																	<IconButton
+																		variant="text"
+																		color="green"
+																		className="rounded-full"
+																		onClick={() => {
+																			questions[
+																				index
+																			][
+																				'answers'
+																			].push(
+																				{
+																					id: null,
+																					value: '',
+																					correct: 0,
+																					delete: false,
+																				},
+																			),
+																				xxx(
+																					x +
+																						1,
+																				);
+																		}}
+																	>
+																		<PlusIcon className="w-5 h-5" />
+																	</IconButton>
+																	<IconButton
+																		variant="text"
+																		color="red"
+																		className="rounded-full"
+																		disabled={
+																			answers.length ===
+																			1
+																		}
+																	>
+																		<TrashIcon className="w-5 h-5" />
+																	</IconButton>
+																</td>
+															</tr>
+														),
+													)}
+												</tbody>
+											</table>
+										</CardBody>
+									</Card>
+								</div>
+							),
+						) : (
+                            <Typography variant='lead' className='mt-2'>
+                                To add Questions, go to the <Link className='text-blue-500' href={`/exam/edit/${exam.id}#categories`}> Edit
+                                </Link> page to add <b>Categories</b>
+                            </Typography>
+                        )}
+				</div>  
 			</div>
 
 			<div className="fixed bottom-10 right-10">
