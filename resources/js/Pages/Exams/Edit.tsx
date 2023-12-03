@@ -23,19 +23,17 @@ export default function Edit({ examTypes, exam }: Props) {
 		>
 			<div>
 				<div className="max-w-7xl mx-auto py-10 sm:px-6 lg:px-8">
-        <Breadcrumbs className='mb-5'>
+					<Breadcrumbs className="mb-5">
 						<Link href="/dashboard" className="opacity-60">
 							<HomeIcon className="h-4 w-4" />
 						</Link>
 						<Link href="/exams" className="opacity-60">
 							<span>Exams</span>
 						</Link>
-                        <Link href="/exam/79" className='opacity-60'>
+						<Link href={`/exam/${exam.id}`}>
 							<span>{exam.id}</span>
 						</Link>
-            <Link href="#" >
-							Edit
-						</Link>
+						<Link href="#">Edit</Link>
 					</Breadcrumbs>
 					<EditExamForm examTypes={examTypes} exam={exam} />
 				</div>
