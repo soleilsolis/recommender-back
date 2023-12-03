@@ -51,7 +51,7 @@ export default function Show({ exam }: Props) {
 	const blankQuestion = {
 		id: null,
 		value: '',
-		category_id: categories[0].id,
+		category_id: categories[0].id ?? null,
 		exam_id: exam.id,
 		type: 'Multiple Choice',
 		answers: [blankAnswer],
