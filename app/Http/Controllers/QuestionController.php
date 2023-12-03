@@ -30,8 +30,12 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
+        $link = "";
+
         foreach ($request->questions as $question) {
             $question = (object) $question;
+
+            $link = "/exam/{$question->exam_id}";
 
             if ($question->id) {
                 $edit = Question::findOrFail($question->id);
@@ -59,7 +63,7 @@ class QuestionController extends Controller
             }
         }
 
-        return to_route("/exam/{$request->questions[0]->exam_id}");
+        return to_route($link);
     }
 
     /**
