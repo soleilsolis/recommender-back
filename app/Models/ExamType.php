@@ -10,12 +10,9 @@ class ExamType extends Model
 {
   use HasFactory, SoftDeletes;
 
-  protected $fillable = ['name', 'team_id'];
+  protected $fillable = ['name'];
 
-  public function team()
-  {
-    return $this->belongsTo(Team::class);
-  }
+
 
   public function exams()
   {

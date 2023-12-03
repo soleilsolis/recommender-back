@@ -51,7 +51,7 @@ export default function AppLayout({
 			label: 'Dashboard',
 		},
 		{
-			name: 'examTypes',
+			name: 'exams.index',
 			label: 'Exam Types',
 		},
 	];
@@ -499,7 +499,7 @@ export default function AppLayout({
 
 				{/* <!-- Page Heading --> */}
 				{renderHeader ? (
-					<header className="bg-white dark:bg-gray-800 shadow">
+					<header className=" dark:bg-gray-800 shadow">
 						<div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
 							{renderHeader()}
 						</div>
@@ -507,7 +507,7 @@ export default function AppLayout({
 				) : null}
 
 				{/* <!-- Page Content --> */}
-				<main>{children}</main>
+				<main className='md:mx-0 mx-4 relative'>{children}</main>
 			</div>
 		</div>
 	);

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -18,11 +19,17 @@ class Exam extends Model
     'description',
     'attempts',
     'expires_at',
+    'team_id',
   ];
 
   public function examType(): BelongsTo
   {
     return $this->belongsTo(ExamType::class);
+  }
+
+  public function instances(): HasMany
+  {
+    return $this->hasMany(Instance::class);
   }
 
   public function questions(): HasMany
@@ -33,5 +40,9 @@ class Exam extends Model
   public function categories(): HasMany
   {
     return $this->hasMany(Category::class);
+  }
+  public function team()
+  {
+    return $this->belongsTo(Team::class);
   }
 }

@@ -13,7 +13,6 @@ return new class extends Migration {
     Schema::create('exam_types', function (Blueprint $table) {
       $table->id();
       $table->text('name');
-      $table->foreignId('team_id')->constrained()->cascadeOnDelete();
       $table->timestamps();
       $table->softDeletes();
     });

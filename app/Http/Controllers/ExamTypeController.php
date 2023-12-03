@@ -7,21 +7,22 @@ use App\Http\Requests\StoreExamTypeRequest;
 use App\Http\Requests\UpdateExamTypeRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Inertia\Inertia;
 
 class ExamTypeController extends Controller
 {
 	/**
 	 * Display a listing of the resource.
 	 */
-	public function index(Request $request): JsonResponse
+	public function index(Request $request)
 	{
 		$examType = ExamType::where(
 			'team_id',
 			'=',
 			$request->user()->currentTeam->id
-		);
+		)->get();
 
-		return $examType;
+		return Inertia::render('ExamTypes/Index', compact('examType'));
 	}
 
 	/**
@@ -29,13 +30,13 @@ class ExamTypeController extends Controller
 	 */
 	public function create()
 	{
-		//
+		return Inertia::render('ExamTypes/Create');
 	}
 
 	/**
 	 * Store a newly created resource in storage.
 	 */
-	public function store(StoreExamTypeRequest $request): JsonResponse
+	public function store(StoreExamTypeRequest $request): ExamType
 	{
 		$examType = ExamType::create([
 			'name' => $request->name,
@@ -67,7 +68,7 @@ class ExamTypeController extends Controller
 	public function update(
 		UpdateExamTypeRequest $request,
 		ExamType $examType
-	): JsonResponse {
+	): ExamType {
 		$examType = $examType->find($request->id);
 		$examType->name = $request->name;
 		$examType->save();

@@ -25,9 +25,18 @@ export interface User {
 }
 
 export interface ExamType {
-	id: number;
+	id: BigInteger;
+	name: string;
+}
+
+export interface Exam {
+	id: BigInteger;
 	name: string;
 	team_id: BigInteger;
+	description: string;
+	attempts: number;
+	expires_at: DateTime;
+	created_at: DateTime;
 }
 
 export interface Auth {
@@ -38,6 +47,7 @@ export interface Auth {
 		}
 	>;
 }
+
 
 export type InertiaSharedProps<T = {}> = T & {
 	jetstream: {
