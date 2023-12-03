@@ -5,19 +5,11 @@ import useTypedPage from '@/Hooks/useTypedPage';
 import { Head } from '@inertiajs/react';
 import {
 	Card,
-	CardHeader,
+	Breadcrumbs,
 	Input,
 	Typography,
-	Button,
 	CardBody,
-	Chip,
-	CardFooter,
-	Tabs,
-	TabsHeader,
-	Tab,
-	Avatar,
 	IconButton,
-	Tooltip,
 	Textarea,
 	SpeedDial,
 	SpeedDialHandler,
@@ -28,14 +20,16 @@ import {
 	Checkbox,
 } from '@material-tailwind/react';
 import AppLayout from '@/Layouts/AppLayout';
-import { Exam } from '@/types';
-import { ClipboardDocumentListIcon, MagnifyingGlassIcon, PencilIcon, TrashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+
 import {
-	PlusIcon,
+	ClipboardDocumentListIcon,
 	HomeIcon,
-	CogIcon,
-	Square3Stack3DIcon,
-} from '@heroicons/react/24/solid';
+	MagnifyingGlassIcon,
+	PencilIcon,
+	TrashIcon,
+	XMarkIcon,
+} from '@heroicons/react/24/outline';
+import { PlusIcon } from '@heroicons/react/24/solid';
 import NavLink from '@/Components/NavLink';
 import moment from 'moment';
 import { useForm } from '@inertiajs/react';
@@ -48,43 +42,58 @@ export default function Show({ exam }: Props) {
 	const route = useRoute();
 	const page = useTypedPage();
 	const [categories, setCategories] = useState(exam.categories);
-	const [questions, setQuestions] = useState(
-		exam.questions ?? [
-			{
-				id: null,
-				value: '',
-				category_id: null,
-				exam_id: exam.id,
-				type: 'Multiple Choice',
-				answers: [
-					{
-						id: null,
-						value: '',
-						correct: 0,
-						delete: false,
-					},
-				],
-				delete: false,
-			},
-		],
-	);
+	const blankAnswer = {
+		id: null,
+		value: '',
+		correct: 0,
+		delete: false,
+	};
+	const blankQuestion = {
+		id: null,
+		value: '',
+		category_id: categories[0].id,
+		exam_id: exam.id,
+		type: 'Multiple Choice',
+		answers: [blankAnswer],
+		delete: false,
+	};
 
-	console.log(questions);
+	const [questions, setQuestions] = useState(
+		exam.questions.length === 0 ? blankQuestion : exam.questions,
+	);
 
 	const types = ['Multiple Choice', 'True or False', 'Written'];
 	const [x, xxx] = useState(1);
 
 	const form = useForm({
 		questions,
-		categories: exam.categories,
+        delete: new Array,
 	});
+
+	const createQuestion = () => {
+		const res = form.post(route('question.store'), {
+			errorBag: 'createQuestion',
+			preserveScroll: true,
+		});
+
+		console.log(res);
+	};
 
 	return (
 		<AppLayout title={`${exam.name}`}>
 			<div className="py-12">
 				<div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+					<Breadcrumbs>
+						<Link href="/dashboard" className="opacity-60">
+							<HomeIcon className="h-4 w-4" />
+						</Link>
+						<Link href="/exams" className="opacity-60">
+							<span>Exams</span>
+						</Link>
+						<a href="#">Breadcrumbs</a>
+					</Breadcrumbs>
 					<Typography variant="h2" color="blue-gray">
-						{exam.name} - {exam.team.name}
+						{exam.name} - ({exam.attempts} Attempts)
 					</Typography>
 					<Typography
 						variant="h6"
@@ -96,9 +105,9 @@ export default function Show({ exam }: Props) {
 							src={exam.team.owner.profile_photo_url}
 							alt={exam.team.owner.name}
 						/>
-						{exam.team.owner.name}
+						{exam.team.owner.name} - {exam.team.name}
 					</Typography>
-					<p>{exam.attempts} Attempts</p>
+
 					<br></br>
 					<Typography variant="h4" color="blue-gray">
 						Questions
@@ -106,194 +115,211 @@ export default function Show({ exam }: Props) {
 
 					{questions.map(
 						({ id, value, category_id, type, answers }, index) => (
-							<Card className="my-3">
-								<CardBody>
-									<div className="grid grid-cols-12 gap-5">
-										<div className="col-span-12 flex items-center justify-between">
-											<Typography variant="h5">
-												#{index + 1}
-											</Typography>
-											<div>
-												<IconButton
-													variant="text"
-													color="green"
-													className="rounded-full"
-													onClick={() => {
-														questions.push({
-															id: null,
-															value: null,
-															category_id: null,
-															exam_id: exam.id,
-															type: 1,
-														}),
-															xxx(x + 1);
-													}}
-												>
-													<PlusIcon className="w-5 h-5" />
-												</IconButton>
-												<IconButton
-													variant="text"
-													color="red"
-													className="rounded-full"
-													disabled={
-														questions.length === 1
+							<div className="my-6 grid lg:grid-cols-5 grid-cols-1 md:gap-4 gap-y-4">
+								<Card className="col-span-3">
+									<CardBody>
+										<div className="grid grid-cols-12 gap-5">
+											<div className="col-span-12 flex items-center justify-between">
+												<Typography variant="h5">
+													#{index + 1}
+												</Typography>
+												<div>
+													<IconButton
+														variant="text"
+														color="green"
+														className="rounded-full"
+														onClick={() => {
+															questions.push(
+																blankQuestion,
+															),
+																xxx(x + 1);
+														}}
+													>
+														<PlusIcon className="w-5 h-5" />
+													</IconButton>
+													<IconButton
+														variant="text"
+														color="red"
+														className="rounded-full"
+														disabled={
+															questions.length ===
+															1
+														}
+                                                        onClick={() => {
+                                                            delete questions[index]
+                                                            form.data.delete.push(index)
+                                                            xxx(x+1)
+                                                        }}
+													>
+														<TrashIcon className="w-5 h-5" />
+													</IconButton>
+												</div>
+											</div>
+											<div className="col-span-12">
+												<Textarea
+													className="h-full"
+													label="Question"
+													onChange={event =>
+														(questions[index][
+															'value'
+														] =
+															event.currentTarget.value)
+													}
+													onLoad={() =>
+														this.closest(
+															'div',
+														).classList.add(
+															'h-full',
+														)
 													}
 												>
-													<TrashIcon className="w-5 h-5" />
-												</IconButton>
+													{value}
+												</Textarea>
+												<div className="mt-5">
+													<Select
+														label="Category"
+														value={category_id}
+														onChange={event =>
+															(questions[index][
+																'category'
+															] = event)
+														}
+													>
+														{categories.map(
+															category => (
+																<Option
+																	value={
+																		category.id
+																	}
+																>
+																	{
+																		category.name
+																	}
+																</Option>
+															),
+														)}
+													</Select>
+												</div>
+
+												<div className="mt-5">
+													<Select
+														label="Answer Type"
+														value={type}
+														onChange={event =>
+															(questions[index][
+																'type'
+															] = event)
+														}
+													>
+														{types.map(type => (
+															<Option
+																value={type}
+															>
+																{type}
+															</Option>
+														))}
+													</Select>
+												</div>
 											</div>
+
+											<div className="md:col-span-3 col-span-12"></div>
 										</div>
-										<div className="md:col-span-6 col-span-12">
-											<Textarea
-												className="h-full"
-												label="Question"
-												onChange={event =>
-													(questions[index]['value'] =
-														event.currentTarget.value)
-												}
-												onLoad={() =>
-													this.closest(
-														'div',
-													).classList.add('h-full')
-												}
-											>
-												{value}
-											</Textarea>
-										</div>
+									</CardBody>
+								</Card>
 
-										<div className="md:col-span-6 col-span-12">
-											<Typography
-												variant="h5"
-												className="mb-5"
-											>
-												Category
-											</Typography>
-											<Select
-												label="Category"
-												onChange={event =>
-													(questions[index][
-														'category'
-													] = event)
-												}
-											>
-												{categories.map(category => (
-													<Option value={category.id}>
-														{category.name}
-													</Option>
-												))}
-											</Select>
-											<Typography
-												variant="h5"
-												className="my-5"
-											>
-												Answers
-											</Typography>
-											<Select
-												label="Answer Type"
-												onChange={event =>
-													(questions[index]['type'] =
-														event)
-												}
-											>
-												{types.map(type => (
-													<Option value={type}>
-														{type}
-													</Option>
-												))}
-											</Select>
+								<Card className="col-span-2 p-0 overflow-y-scroll">
+									<CardBody className="h-[300px] ">
+										<table className="w-full mt-5 md:h-max mb-6 table-fixed border-separate border-spacing-y-2.5">
+											<thead>
+												<tr>
+													<th className="w-[20%]">
+														Correct
+													</th>
+													<th className="w-[60%]">
+														Value
+													</th>
+													<th className="w-[20%]">
+														Actions
+													</th>
+												</tr>
+											</thead>
+											<tbody>
+												{answers.map(
+													(answer, answerIndex) => (
+														<tr>
+															<td>
+																<Checkbox
+																	crossOrigin={
+																		undefined
+																	}
+																	onChange={event => {
+																		answer.correct =
+																			!answer.correct;
+																		event.currentTarget.checked =
+																			answer.correct;
+																	}}
+																/>
+															</td>
+															<td>
+																<Input
+																	crossOrigin={
+																		undefined
+																	}
+																	onChange={event => {
+																		answer.value =
+																			event.currentTarget.value;
 
-											<table className="w-full mt-5">
-												<thead>
-													<tr>
-														<th className="w-[10%]">
-															Correct
-														</th>
-														<th className="w-[70%]">
-															Value
-														</th>
-														<th className="w-[30%]">
-															Actions
-														</th>
-													</tr>
-												</thead>
-												<tbody>
-													{answers.map(
-														(
-															answer,
-															answerIndex,
-														) => (
-															<tr>
-																<td className="flex justify-center items-center">
-																	<Checkbox
-																		crossOrigin={
-																			undefined
-																		}
-																		onChange={event => {
-																			answer.correct =
-																				!answer.correct;
-																			event.currentTarget.checked =
-																				answer.correct;
-																		}}
-																	/>
-																</td>
-																<td>
-																	<Input
-																		crossOrigin={
-																			undefined
-																		}
-																		onChange={event => {
-																			answer.value =
-																				event.currentTarget.value;
-
-																			console.log(
-																				answer.value,
+																		console.log(
+																			answer.value,
+																		);
+																	}}
+																/>
+															</td>
+															<td>
+																<IconButton
+																	variant="text"
+																	color="green"
+																	className="rounded-full"
+																	onClick={() => {
+																		questions[
+																			index
+																		][
+																			'answers'
+																		].push({
+																			id: null,
+																			value: '',
+																			correct: 0,
+																			delete: false,
+																		}),
+																			xxx(
+																				x +
+																					1,
 																			);
-																		}}
-																	/>
-																</td>
-																<td className="flex justify-center items-center">
-																	<IconButton
-																		variant="text"
-																		color="green"
-																		className="rounded-full"
-																		onClick={() => {
-																			answers.push(
-																				{
-																					id: null,
-																					value: '',
-																					correct: 0,
-																					delete: false,
-																				},
-																			),
-																				xxx(
-																					x +
-																						1,
-																				);
-																		}}
-																	>
-																		<PlusIcon className="w-5 h-5" />
-																	</IconButton>
-																	<IconButton
-																		variant="text"
-																		color="red"
-																		className="rounded-full"
-																		disabled={
-																			answers.length ===
-																			1
-																		}
-																	>
-																		<TrashIcon className="w-5 h-5" />
-																	</IconButton>
-																</td>
-															</tr>
-														),
-													)}
-												</tbody>
-											</table>
-										</div>
-									</div>
-								</CardBody>
-							</Card>
+																	}}
+																>
+																	<PlusIcon className="w-5 h-5" />
+																</IconButton>
+																<IconButton
+																	variant="text"
+																	color="red"
+																	className="rounded-full"
+																	disabled={
+																		answers.length ===
+																		1
+																	}
+                                                                    
+																>
+																	<TrashIcon className="w-5 h-5" />
+																</IconButton>
+															</td>
+														</tr>
+													),
+												)}
+											</tbody>
+										</table>
+									</CardBody>
+								</Card>
+							</div>
 						),
 					)}
 				</div>
@@ -308,7 +334,10 @@ export default function Show({ exam }: Props) {
 					</SpeedDialHandler>
 					<SpeedDialContent>
 						<SpeedDialAction>
-							<ClipboardDocumentListIcon className="h-5 w-5" />
+							<ClipboardDocumentListIcon
+								className="h-5 w-5"
+								onClick={createQuestion}
+							/>
 						</SpeedDialAction>
 						<SpeedDialAction>
 							<XMarkIcon className="h-5 w-5" />

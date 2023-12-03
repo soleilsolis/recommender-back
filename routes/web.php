@@ -60,7 +60,7 @@ Route::middleware([
     Route::controller(CategoryController::class)->group(function () {
         Route::get('/categories', 'index');
         Route::get('/category/{id}', 'show');
-        Route::post('/category', 'store');
+        Route::post('/category', 'store')->name('category.store');
         Route::put('/category/{id}/action', 'action');
         Route::patch('/category/{id}', 'update');
         Route::delete('/category/{id}', 'destroy');
@@ -70,7 +70,7 @@ Route::middleware([
         Route::get('/exams', 'index')->name('exams.index');
         Route::get('/exam/create', 'create')->name('exam.create');
         Route::get('/exam/{id}', 'show');
-        Route::get('/exam/edit/{id}', 'edit');
+        Route::get('/exam/edit/{id}', 'edit')->name('exam.edit');
         Route::post('/exam', 'store')->name('exam.store');
         Route::put('/exam/{id}/action', 'action');
         Route::patch('/exam/{id}', 'update');
@@ -106,7 +106,7 @@ Route::middleware([
     Route::controller(QuestionController::class)->group(function () {
         Route::get('/questions', 'index');
         Route::get('/question/{id}', 'show');
-        Route::post('/question', 'store');
+        Route::post('/question', 'store')->name('question.store');
         Route::put('/question/{id}/action', 'action');
         Route::patch('/question/{id}', 'update');
         Route::delete('/question/{id}', 'destroy');

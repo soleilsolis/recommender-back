@@ -81,8 +81,22 @@ class ExamController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Exam $exam)
+    public function edit(Exam $exam, Request $request)
     {
+        $examTypes = ExamType::all();
+        $exam = $exam->with([
+            'examType',
+            'instances',
+            'questions' => [
+                'answers'
+            ],
+            'categories',
+            'team' => [
+                'owner'
+            ],
+        ])->findOrFail($request->id);
+        
+        return Inertia::render('Exams/Edit', compact('examTypes', 'exam'));
     }
 
     /**

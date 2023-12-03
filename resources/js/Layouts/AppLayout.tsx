@@ -52,7 +52,7 @@ export default function AppLayout({
 		},
 		{
 			name: 'exams.index',
-			label: 'Exam Types',
+			label: 'Exams',
 		},
 	];
 

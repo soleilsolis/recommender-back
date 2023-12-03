@@ -29,7 +29,12 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        //
+        $category = Category::create([
+            'name' => $request->name,
+            'exam_id' => $request->exam_id,
+        ]);
+
+        return redirect("/exam/edit/{$request->exam_id}");
     }
 
     /**

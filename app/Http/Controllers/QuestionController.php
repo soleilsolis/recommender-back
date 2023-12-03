@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Question;
 use App\Http\Requests\StoreQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
+use Illuminate\Http\Request;
 
 class QuestionController extends Controller
 {
@@ -27,9 +28,38 @@ class QuestionController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreQuestionRequest $request)
+    public function store(Request $request)
     {
-        //
+        foreach ($request->questions as $question) {
+            $question = (object) $question;
+
+            if ($question->id) {
+                $edit = Question::findOrFail($question->id);
+
+                if ($edit->exam->team_id == $request->user()->currentTeam->id) {
+                    $edit->value = $question->value;
+                    $edit->category_id = $question->category_id;
+                    $edit->exam_id = $question->exam_id;
+                    $edit->type = $question->type;
+
+                    $edit->save();
+                }
+            } else {
+
+                if ($question->value) {
+                    $create = Question::create([
+                        'value' => $question->value,
+                        'exam_id' => $question->exam_id,
+                        'category_id' => $question->category_id,
+                        'type' => $question->type,
+                    ]);
+
+                    $question->id =  $create->id;
+                }
+            }
+        }
+
+        return to_route("/exam/{$request->questions[0]->exam_id}");
     }
 
     /**
