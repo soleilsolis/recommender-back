@@ -17,7 +17,12 @@ class ExamFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'name' => 'Your First Exam',
+            'exam_type_id' => 1,
+            'description' => 'This is a sample exam. Good luck!',
+            'attempts' => 1,
+            'expires_at' => now()->addYear(),
+            'team_id' => 1,
         ];
     }
 }

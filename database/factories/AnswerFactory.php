@@ -17,7 +17,9 @@ class AnswerFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'value' => $this->faker->word(),
+            'correct' => 0,
+
         ];
     }
 }

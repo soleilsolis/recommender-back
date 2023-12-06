@@ -127,6 +127,7 @@ class ExamController extends Controller
             'question.category.name',
             'answer.correct',
         ]);
+        
 
         $score = 0;
 

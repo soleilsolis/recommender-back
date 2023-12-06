@@ -45,11 +45,14 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 		labels: exam.categories.map(category => category.name),
 		datasets: [
 			{
-				label: '# of Votes',
+				label: 'Categories',
 				data: Object.values(radarMap).map(category => {
 					const correct =
 						category[1] != undefined ? category[1].length : 0;
-					const total = correct + category[0].length;
+
+					const incorrect =
+						category[0] != undefined ? category[0].length : 0;
+					const total = correct + incorrect;
 
 					return (correct / total) * 100;
 				}),
@@ -147,7 +150,11 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 									category[1] != undefined
 										? category[1].length
 										: 0;
-								const total = correct + category[0].length;
+								const incorrect =
+									category[0] != undefined
+										? category[0].length
+										: 0;
+								const total = correct + incorrect;
 
 								return (
 									<>

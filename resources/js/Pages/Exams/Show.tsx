@@ -42,9 +42,15 @@ export default function Show({ exam }: Props) {
 	const [categories, setCategories] = useState(exam.categories);
 	const blankAnswer = {
 		id: null,
-		value: 'Sample Answer',
+		value: 'Correct Answer',
 		correct: 1,
 	};
+	const blankAnswerIncorrect = {
+		id: null,
+		value: 'Correct Answer',
+		correct: 0,
+	};
+
 	const blankQuestion = {
 		id: null,
 		value: '',
@@ -254,7 +260,7 @@ export default function Show({ exam }: Props) {
 																	][
 																		'answers'
 																	].push(
-																		blankAnswer,
+																		blankAnswerIncorrect,
 																	),
 																		xxx(
 																			x +

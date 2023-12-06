@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Actions\Jetstream\CreateTeam;
+use App\Models\ExamType;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -16,19 +17,22 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        $user = \App\Models\User::factory()->create([
+        $user = \App\Models\User::factory()->withPersonalTeam()->create([
             'name' => 'Administrator',
             'email' => 'admin@example.com',
             'type' => 'admin',
         ]);
 
+        $examTypeSeeder = new ExamTypeSeeder();
+        $examTypeSeeder->run();
 
+        $examSeeder = new ExamSeeder();
+        $examSeeder->run();
 
+        $categorySeeder = new CategorySeeder();
+        $categorySeeder->run();
 
-        $create = new CreateTeam();
-        $create->create($user, [
-            'name' => "Admin Team",
-            'personal_team' => 1,
-        ]);
+        $questionSeeder = new QuestionSeeder();
+        $questionSeeder->run();
     }
 }
