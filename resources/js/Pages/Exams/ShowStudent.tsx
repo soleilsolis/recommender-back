@@ -56,29 +56,24 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 
 					return (correct / total) * 100;
 				}),
-				backgroundColor: 'rgba(255, 99, 132, 0.2)',
-				borderColor: 'rgba(255, 99, 132, 1)',
-				borderWidth: 1,
-			},
-			{
-				label: ' ',
-				data: Object.values(radarMap).map(category => 100),
-				backgroundColor: 'rgba(0, 0, 0, 0)',
-				borderColor: 'rgba(0, 0, 0, 0)',
+				backgroundColor: 'rgba(0, 255, 0, 0.2)',
+				borderColor: '#00B200',
 				borderWidth: 1,
 			},
 		],
 	};
 
 	const options = {
-		scale: {
-			ticks: {
-				beginAtZero: true,
-				max: 100,
-				min: 0,
-				stepSize: 20,
+		scales: {
+			r: {
+				angleLines: {
+					display: false
+				},
+				suggestedMin: 0,
+				suggestedMax: 100,
+				
 			},
-		},
+		}
 	};
 
 	return (
