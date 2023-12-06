@@ -18,6 +18,7 @@ import {
 	Option,
 	Checkbox,
 	Button,
+	Radio,
 } from '@material-tailwind/react';
 import AppLayout from '@/Layouts/AppLayout';
 
@@ -41,8 +42,8 @@ export default function Show({ exam }: Props) {
 	const [categories, setCategories] = useState(exam.categories);
 	const blankAnswer = {
 		id: null,
-		value: '',
-		correct: 0,
+		value: 'Sample Answer',
+		correct: 1,
 	};
 	const blankQuestion = {
 		id: null,
@@ -274,10 +275,11 @@ export default function Show({ exam }: Props) {
 														) => (
 															<tr>
 																<td>
-																	<Checkbox
+																	<Radio
 																		crossOrigin={
 																			undefined
 																		}
+																		name={"question"+index}
 																		defaultChecked={
 																			answer.correct ===
 																			1

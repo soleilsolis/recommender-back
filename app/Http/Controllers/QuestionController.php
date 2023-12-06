@@ -33,16 +33,12 @@ class QuestionController extends Controller
     public function store(Request $request)
     {
 
+        $exam = Exam::find($request->exam_id);
         foreach (array_filter($request->questions) as $submission) {
             $submission = (object) $submission;
 
             $question = $submission->id ? Question::find($submission->id) : new Question();
 
-            $exam = Exam::find($request->exam_id);
-
-            if (!$exam->team_id == $request->user()->currentTeam->id) {
-                continue;
-            }
 
             $question->value = $submission->value ?? " ";
             $question->category_id = $submission->category_id;

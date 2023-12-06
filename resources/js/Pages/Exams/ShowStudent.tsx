@@ -7,7 +7,6 @@ import AppLayout from '@/Layouts/AppLayout';
 
 import { HomeIcon } from '@heroicons/react/24/outline';
 import { PlusIcon } from '@heroicons/react/24/solid';
-import { useForm } from '@inertiajs/react';
 
 interface Props {
 	exam: any;
