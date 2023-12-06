@@ -7,6 +7,7 @@ use App\Http\Requests\StoreInstanceRequest;
 use App\Http\Requests\UpdateInstanceRequest;
 use App\Models\Exam;
 use App\Models\InstanceAnswer;
+use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -65,11 +66,13 @@ class InstanceController extends Controller
      */
     public function show(Instance $instance, Request $request, Exam $exam)
     {
-        
+        $user_id = $request->user_id;
+        $user = User::find($user_id);
+
         $exam = $exam->with([
             'examType',
-            'instances' => function (Builder $query) {
-                $query->where('user_id', '=', $request->user_id)->orderBy('created_at', 'desc');
+            'instances' => function (Builder $query) use ($user_id) {
+                $query->where('user_id', '=', $user_id)->orderBy('created_at', 'desc');
             },
             'questions' => [
                 'answers'
@@ -102,11 +105,12 @@ class InstanceController extends Controller
             }
         }
 
-        return Inertia::render('Exams/Instance', [
+        return Inertia::render('Exams/Submission', [
             'exam' => $exam,
             'score' => $exam->instances->first()->score,
             'total' => $exam->questions->count(),
             'radarMap' => $radarMap,
+            'user' => $user,
         ]);
         
     }
