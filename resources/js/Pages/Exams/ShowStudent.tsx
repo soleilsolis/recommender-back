@@ -44,7 +44,13 @@ ChartJS.register(
 	Legend,
 );
 
-export default function ShowStudent({ exam, score, total, radarMap, instances }: Props) {
+export default function ShowStudent({
+	exam,
+	score,
+	total,
+	radarMap,
+	instances,
+}: Props) {
 	const route = useRoute();
 	const page = useTypedPage();
 
@@ -222,7 +228,7 @@ export default function ShowStudent({ exam, score, total, radarMap, instances }:
 						</CardBody>
 					</Card>
 
-					{instances && (
+					{instances.length > 0 && (
 						<>
 							<Card className="my-5">
 								<CardBody>
@@ -240,7 +246,6 @@ export default function ShowStudent({ exam, score, total, radarMap, instances }:
 									>
 										{instances[0].recommendation}
 									</Typography>
-									
 								</CardBody>
 							</Card>
 						</>
