@@ -27,7 +27,8 @@ class DatabaseSeeder extends Seeder
 
         $create = new CreateTeam();
         $create->create($user, [
-            'name' => "Admin Team"
+            'name' => "Admin Team",
+            'personal_team' => 1,
         ]);
     }
 }
