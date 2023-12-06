@@ -2,7 +2,14 @@ import { Link } from '@inertiajs/react';
 import React, { useState } from 'react';
 import useRoute from '@/Hooks/useRoute';
 import useTypedPage from '@/Hooks/useTypedPage';
-import { Breadcrumbs, Typography, Button } from '@material-tailwind/react';
+import {
+	Breadcrumbs,
+	Typography,
+	Button,
+	Card,
+	CardBody,
+	CardHeader,
+} from '@material-tailwind/react';
 import AppLayout from '@/Layouts/AppLayout';
 
 import { HomeIcon } from '@heroicons/react/24/outline';
@@ -40,8 +47,7 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 	const route = useRoute();
 	const page = useTypedPage();
 
-	console.log(radarMap);
-	const data = {
+	const radarData = {
 		labels: exam.categories.map(category => category.name),
 		datasets: [
 			{
@@ -63,17 +69,17 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 		],
 	};
 
-	const options = {
+	const radarOptions = {
+		responsive: true,
 		scales: {
 			r: {
 				angleLines: {
-					display: false
+					display: false,
 				},
 				suggestedMin: 0,
 				suggestedMax: 100,
-				
 			},
-		}
+		},
 	};
 
 	return (
@@ -84,19 +90,17 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 						<Link href="/dashboard" className="opacity-60">
 							<HomeIcon className="h-4 w-4" />
 						</Link>
-						<Link href="/exams" className="opacity-60">
+						<Link href="/exams/student" className="opacity-60">
 							<span>Exams</span>
 						</Link>
 						<Link href={`/exam/${exam.id}`}>
 							<span>{exam.id}</span>
 						</Link>
 					</Breadcrumbs>
-					<div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-5 md:gap-4">
+					<div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-5 md:gap-4 mt-6">
 						<div>
 							<Typography variant="h2" color="blue-gray">
-								{exam.name} (
-								{exam.attempts - exam.instances.length}{' '}
-								Attempts){' '}
+								{exam.name}
 							</Typography>
 							<Typography
 								variant="h6"
@@ -109,12 +113,6 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 									alt={exam.team.owner.name}
 								/>
 								{exam.team.owner.name} - {exam.team.name}
-							</Typography>
-						</div>
-
-						<div className="md:text-right">
-							<Typography variant="h2">
-								Score: {score} / {total}
 							</Typography>
 						</div>
 					</div>
@@ -131,40 +129,102 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 						</Link>
 					)}
 
-					<Typography variant="h3" className="mb-5 mt-10">
+					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-4 gap-y-2">
+						<Card className=" h-max my-5">
+							<CardBody className="h-max text-center">
+								<Typography
+									variant="h3"
+									color={
+										(score / total) * 100 < 50
+											? 'red'
+											: 'green'
+									}
+								>
+									Score: {score} / {total}
+								</Typography>
+							</CardBody>
+						</Card>
+
+						<Card className=" h-max my-5">
+							<CardBody className="h-max text-center">
+								<Typography variant="h3" color="black">
+									Attempts: {exam.instances.length} /{' '}
+									{exam.attempts}
+								</Typography>
+							</CardBody>
+						</Card>
+					</div>
+
+					<Typography variant="h3" className="my-5 ">
 						Stats
 					</Typography>
 
-					<div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-x-0 gap-y-6">
-						<div>
-							<Radar data={data} options={options} />
-						</div>
-						<div>
-							{Object.values(radarMap).map((category, index) => {
-								const correct =
-									category[1] != undefined
-										? category[1].length
-										: 0;
-								const incorrect =
-									category[0] != undefined
-										? category[0].length
-										: 0;
-								const total = correct + incorrect;
+					<Card>
+						<CardBody>
+							<Typography
+								variant="h4"
+								color="black"
+								className="mb-6"
+							>
+								By Category
+							</Typography>
+							<div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-x-0 gap-y-6">
+								<div>
+									<div>
+										{Object.values(radarMap).map(
+											(category, index) => {
+												const correct =
+													category[1] != undefined
+														? category[1].length
+														: 0;
+												const incorrect =
+													category[0] != undefined
+														? category[0].length
+														: 0;
+												const total =
+													correct + incorrect;
 
-								return (
-									<>
-										<Typography
-											variant="h3"
-											className="md:text-right mb-4"
-										>
-											{Object.keys(radarMap)[index]} :{' '}
-											{correct} /{total}
-										</Typography>
-									</>
-								);
-							})}
-						</div>
-					</div>
+												return (
+													<>
+														<Typography
+															variant="h5"
+															className="mb-2"
+															color={(correct/total) * 100 < 50 ? 'red' : 'black'}
+														>
+															{
+																Object.keys(
+																	radarMap,
+																)[index]
+															}{' '}
+															: {correct} /{total}
+														</Typography>
+													</>
+												);
+											},
+										)}
+									</div>
+								</div>
+								<div>
+									<Radar
+										data={radarData}
+										options={radarOptions}
+									/>
+								</div>
+							</div>
+						</CardBody>
+					</Card>
+
+					<Card className='my-5'>
+						<CardBody>
+							<Typography
+								variant="h4"
+								color="black"
+								className="mb-6"
+							>
+								Recommendations
+							</Typography>
+						</CardBody>
+					</Card>
 				</div>
 			</div>
 		</AppLayout>

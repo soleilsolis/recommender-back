@@ -10,6 +10,7 @@ use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamTypeController;
 use App\Http\Controllers\Instance;
 use App\Http\Controllers\InstanceAnswerController;
+use App\Http\Controllers\InstanceController;
 use App\Http\Controllers\QuestionController;
 /*
 |--------------------------------------------------------------------------
@@ -93,9 +94,9 @@ Route::middleware([
         Route::delete('/examType/{id}', 'destroy');
     });
 
-    Route::controller(Instance::class)->group(function () {
-        Route::get('/instances', 'index');
-        Route::get('/instance/{id}', 'show');
+    Route::controller(InstanceController::class)->group(function () {
+        Route::get('/instances/{exam_id}', 'index')->name('instances.index');
+        Route::get('/instance/show/{exam_id}/{user_id}', 'show');
         Route::post('/instance', 'store');
         Route::put('/instance/{id}/action', 'action');
         Route::patch('/instance/{id}', 'update');

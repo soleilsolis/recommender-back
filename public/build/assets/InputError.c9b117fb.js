@@ -1,1 +1,0 @@
-import{j as e}from"./app.d568e0c3.js";function i({message:r,className:n,children:t}){return!r&&!t?null:e("div",{className:n,children:e("p",{className:"text-sm text-red-600 dark:text-red-400",children:r||t})})}export{i as I};

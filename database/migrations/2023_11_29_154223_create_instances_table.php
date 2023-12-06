@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('exam_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->timestamp('finished_at')->nullable();
+            $table->longText('recommendation')->nullable();
             $table->timestamps();
         });
     }

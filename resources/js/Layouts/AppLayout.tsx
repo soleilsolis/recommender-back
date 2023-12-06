@@ -11,6 +11,7 @@ import DropdownLink from '@/Components/DropdownLink';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Team } from '@/types';
+import { Card, CardBody, Spinner, Typography } from '@material-tailwind/react';
 
 interface Props {
 	title: string;
@@ -95,7 +96,9 @@ export default function AppLayout({
 											return (
 												item.type.find(
 													element =>
-														element == page.props.auth.user.type,
+														element ==
+														page.props.auth.user
+															.type,
 												) !== undefined
 											);
 										})
@@ -529,7 +532,33 @@ export default function AppLayout({
 				) : null}
 
 				{/* <!-- Page Content --> */}
-				<main className="md:mx-0 mx-4 relative">{children}</main>
+				<main className="md:mx-0 mx-4 relative min-h-full">
+					{children}
+
+					{page.props.auth.user?.current_instance && (<div className="absolute top-5 right-5">
+						<Link href={route('exam.current', { page: 1 })}>
+							<Card className=" max-w-[300px] w-[300px]">
+								<CardBody className="p-4 flex items-center gap-4">
+									<Spinner />
+									<div>
+										<Typography
+											variant="small"
+											className="flex items-center gap-3"
+										>
+											You are currently taking:
+										</Typography>
+										<Typography variant="h6">
+											{
+												page.props.auth.user
+													?.current_instance.exam.name
+											}
+										</Typography>
+									</div>
+								</CardBody>
+							</Card>
+						</Link>
+					</div>)}
+				</main>
 			</div>
 		</div>
 	);

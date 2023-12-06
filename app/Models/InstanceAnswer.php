@@ -11,6 +11,7 @@ class InstanceAnswer extends Model
 
   protected $fillable = ['instance_id', 'question_id', 'answer_id'];
 
+  protected $with = ['answer'];
   public function instance()
   {
     return $this->belongsTo(Instance::class);

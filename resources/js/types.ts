@@ -19,6 +19,8 @@ export interface User {
 	profile_photo_path: Nullable<string>;
 	profile_photo_url: string;
 	two_factor_enabled: boolean;
+	current_exam_id: BigInt;
+	current_instance: Object;
 	email_verified_at: Nullable<DateTime>;
 	created_at: DateTime;
 	updated_at: DateTime;
@@ -47,7 +49,6 @@ export interface Auth {
 		}
 	>;
 }
-
 
 export type InertiaSharedProps<T = {}> = T & {
 	jetstream: {

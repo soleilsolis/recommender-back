@@ -101,6 +101,9 @@ export default function Show({ exam }: Props) {
 						<Link href={`/exam/edit/${exam.id}`}>
 							<Button size="sm">Edit</Button>
 						</Link>
+						<Link href={route('instances.index', {exam_id: exam.id})}>
+							<Button size="sm">View Submissions</Button>
+						</Link>
 					</Typography>
 					<Typography
 						variant="h6"

@@ -120,14 +120,13 @@ class ExamController extends Controller
             ],
         ])->find($request->id);
 
-        $instanceAnswers = InstanceAnswer::with('answer','question.category')->where('instance_id', '=', $exam->instances->first()->id ?? 0)->get();
-
-
+        $instanceAnswers = InstanceAnswer::with('answer', 'question.category')->where('instance_id', '=', $exam->instances->first()->id ?? 0)->get();
+        
+        
         $radarMap = $instanceAnswers->groupBy([
             'question.category.name',
             'answer.correct',
         ]);
-        
 
         $score = 0;
 
@@ -135,11 +134,20 @@ class ExamController extends Controller
             $score += $instanceAnswer->answer->correct;
         }
 
+        foreach ($exam->instances as $instance){
+            $instance->score = 0;
+
+            foreach ($instance->instanceAnswers as $instanceAnswer) {
+                $instance->score += $instanceAnswer->answer->correct;
+            }
+        }
+
         return Inertia::render('Exams/ShowStudent', [
             'exam' => $exam,
-            'score' => $score,
+            'score' => $exam->instances->first()->score,
             'total' => $exam->questions->count(),
             'radarMap' => $radarMap,
+            'instances' => $exam->instances,
         ]);
     }
 
@@ -217,6 +225,23 @@ class ExamController extends Controller
         $user->save();
 
         $instance = Instance::find($current_instance_id);
+        $instance->finished_at = now();
+        $instance->save();
+
+        foreach ($instance->exam->questions as $question) {
+            $find = InstanceAnswer::where([
+                ['question_id' , '=', $question->id],
+                ['instance_id' , '=', $instance->id],
+            ])->first();
+
+            if(! $find) {
+                InstanceAnswer::create([
+                    'question_id' => $question->id,
+                    'instance_id' => $instance->id,
+                    'answer_id' => Answer::where('correct', '=', 0)->first()->id
+                ]);
+            }
+        }
 
         return to_route('exams.show.student', ['id' => $instance->exam->id]);
     }

@@ -11,6 +11,8 @@ class Instance extends Model
 
   protected $fillable = ['exam_id', 'user_id'];
 
+  protected $with = ['exam', 'user'];
+
   public function exam()
   {
     return $this->belongsTo(Exam::class);

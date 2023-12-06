@@ -5,15 +5,42 @@ namespace App\Http\Controllers;
 use App\Models\Instance;
 use App\Http\Requests\StoreInstanceRequest;
 use App\Http\Requests\UpdateInstanceRequest;
+use App\Models\Exam;
+use App\Models\InstanceAnswer;
+use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class InstanceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $instances = Instance::where([
+            'exam_id' =>  $request->exam_id
+        ]);
+
+        if ($request->all) {
+            $instances =  $instances->paginate(15);
+        } else {
+            $instances =  $instances->paginate($instances->count());
+        }
+
+        foreach ($instances as $instance){
+            $instance->score = 0;
+            $instance->total = $instance->exam->questions->count();
+
+            foreach ($instance->instanceAnswers as $instanceAnswer) {
+                $instance->score += $instanceAnswer->answer->correct;
+            }
+        }
+
+        $paginator = $instances;
+        $exam = Exam::findOrFail($request->exam_id);
+
+        return Inertia::render('Exams/Instances', compact('paginator', 'exam'));
     }
 
     /**
@@ -35,9 +62,52 @@ class InstanceController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Instance $instance)
+    public function show(Instance $instance, Request $request, Exam $exam)
     {
-        //
+        
+        $exam = $exam->with([
+            'examType',
+            'instances' => function (Builder $query) {
+                $query->where('user_id', '=', $request->user_id)->orderBy('created_at', 'desc');
+            },
+            'questions' => [
+                'answers'
+            ],
+            'categories',
+            'team' => [
+                'owner'
+            ],
+        ])->find($request->exam_id);
+
+        $instanceAnswers = InstanceAnswer::with('answer', 'question.category')->where('instance_id', '=', $exam->instances->first()->id ?? 0)->get();
+        
+        
+        $radarMap = $instanceAnswers->groupBy([
+            'question.category.name',
+            'answer.correct',
+        ]);
+
+        $score = 0;
+
+        foreach ($instanceAnswers as $instanceAnswer) {
+            $score += $instanceAnswer->answer->correct;
+        }
+
+        foreach ($exam->instances as $instance){
+            $instance->score = 0;
+
+            foreach ($instance->instanceAnswers as $instanceAnswer) {
+                $instance->score += $instanceAnswer->answer->correct;
+            }
+        }
+
+        return Inertia::render('Exams/Instance', [
+            'exam' => $exam,
+            'score' => $exam->instances->first()->score,
+            'total' => $exam->questions->count(),
+            'radarMap' => $radarMap,
+        ]);
+        
     }
 
     /**
