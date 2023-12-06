@@ -83,7 +83,6 @@ Route::middleware([
         Route::put('/exam/{id}', 'update')->name('exam.update')->middleware('owner');
         Route::delete('/exam/{id}', 'destroy')->middleware('owner');
         Route::get('/exam/currentExam/{question_id}', 'edit')->name('exam.currentExam');
-
     });
 
     Route::controller(ExamTypeController::class)->group(function () {
@@ -96,6 +95,7 @@ Route::middleware([
 
     Route::controller(InstanceController::class)->group(function () {
         Route::get('/instances/{exam_id}', 'index')->name('instances.index');
+        Route::post('/instance/recommendation', 'recommend')->name('instance.recommendation.store');
         Route::get('/instance/show/{exam_id}/{user_id}', 'show');
         Route::post('/instance', 'store');
         Route::put('/instance/{id}/action', 'action');

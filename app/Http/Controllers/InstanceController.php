@@ -115,6 +115,18 @@ class InstanceController extends Controller
         
     }
 
+    public function recommend(Request $request)
+    {
+        $instance = Instance::where([
+            ['user_id', '=', $request->user_id],
+            ['exam_id', '=', $request->exam_id],
+        ])->last();
+
+        $instance->recommendation = $request->recommendation;
+        $instance->save();
+      
+    }
+
     /**
      * Show the form for editing the specified resource.
      */

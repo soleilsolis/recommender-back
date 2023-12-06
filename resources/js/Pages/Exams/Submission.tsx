@@ -1,4 +1,4 @@
-import { Link } from '@inertiajs/react';
+import { Link, useForm } from '@inertiajs/react';
 import React, { useState } from 'react';
 import useRoute from '@/Hooks/useRoute';
 import useTypedPage from '@/Hooks/useTypedPage';
@@ -9,6 +9,7 @@ import {
 	Card,
 	CardBody,
 	CardHeader,
+	Textarea,
 } from '@material-tailwind/react';
 import AppLayout from '@/Layouts/AppLayout';
 
@@ -21,6 +22,7 @@ interface Props {
 	categoryGroup: any;
 	total: any;
 	radarMap: any;
+	user: any;
 }
 
 import {
@@ -43,9 +45,21 @@ ChartJS.register(
 	Legend,
 );
 
-export default function ShowStudent({ exam, score, total, radarMap }: Props) {
+export default function ShowStudent({ exam, score, total, radarMap, user }: Props) {
 	const route = useRoute();
 	const page = useTypedPage();
+	const form = useForm({
+		recommendation: '',
+		user_id: user.id,
+		exam_id: exam.id,
+	});
+
+	const submitRecommendation = () => {
+		const res =  form.post(route('instance.recommendation.store'), {
+			errorBag: 'submitRecommendation',
+			preserveScroll: true,
+		})
+	}
 
 	const radarData = {
 		labels: exam.categories.map(category => category.name),
@@ -93,16 +107,15 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 						<Link href="/exams" className="opacity-60">
 							<span>Exams</span>
 						</Link>
-						
-						<Link href={`/exam/${exam.id}`}  className="opacity-60"> 
+
+						<Link href={`/exam/${exam.id}`} className="opacity-60">
 							<span>{exam.id}</span>
 						</Link>
-						
 					</Breadcrumbs>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-5 md:gap-4 mt-6">
 						<div>
 							<Typography variant="h2" color="blue-gray">
-								{exam.name}
+							{user.name}'s {exam.name}
 							</Typography>
 							<Typography
 								variant="h6"
@@ -191,7 +204,14 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 														<Typography
 															variant="h5"
 															className="mb-2"
-															color={(correct/total) * 100 < 50 ? 'red' : 'black'}
+															color={
+																(correct /
+																	total) *
+																	100 <
+																50
+																	? 'red'
+																	: 'black'
+															}
 														>
 															{
 																Object.keys(
@@ -216,7 +236,7 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 						</CardBody>
 					</Card>
 
-					<Card className='my-5'>
+					<Card className="my-5">
 						<CardBody>
 							<Typography
 								variant="h4"
@@ -225,6 +245,14 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 							>
 								Recommendations
 							</Typography>
+
+							<div className='my-5'>
+								<Textarea label='Recommendations' onChange={event => form.data.recommendation = event.currentTarget.value}>
+
+								</Textarea>
+							</div>
+
+							<Button onClick={submitRecommendation}>Save</Button>
 						</CardBody>
 					</Card>
 				</div>

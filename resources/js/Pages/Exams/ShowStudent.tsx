@@ -21,6 +21,7 @@ interface Props {
 	categoryGroup: any;
 	total: any;
 	radarMap: any;
+	instances: any;
 }
 
 import {
@@ -43,7 +44,7 @@ ChartJS.register(
 	Legend,
 );
 
-export default function ShowStudent({ exam, score, total, radarMap }: Props) {
+export default function ShowStudent({ exam, score, total, radarMap, instances }: Props) {
 	const route = useRoute();
 	const page = useTypedPage();
 
@@ -189,7 +190,14 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 														<Typography
 															variant="h5"
 															className="mb-2"
-															color={(correct/total) * 100 < 50 ? 'red' : 'black'}
+															color={
+																(correct /
+																	total) *
+																	100 <
+																50
+																	? 'red'
+																	: 'black'
+															}
 														>
 															{
 																Object.keys(
@@ -214,17 +222,29 @@ export default function ShowStudent({ exam, score, total, radarMap }: Props) {
 						</CardBody>
 					</Card>
 
-					<Card className='my-5'>
-						<CardBody>
-							<Typography
-								variant="h4"
-								color="black"
-								className="mb-6"
-							>
-								Recommendations
-							</Typography>
-						</CardBody>
-					</Card>
+					{instances && (
+						<>
+							<Card className="my-5">
+								<CardBody>
+									<Typography
+										variant="h4"
+										color="black"
+										className="mb-6"
+									>
+										Recommendations
+									</Typography>
+									<Typography
+										variant="lead"
+										color="black"
+										className="mb-6"
+									>
+										{instances[0].recommendation}
+									</Typography>
+									
+								</CardBody>
+							</Card>
+						</>
+					)}
 				</div>
 			</div>
 		</AppLayout>

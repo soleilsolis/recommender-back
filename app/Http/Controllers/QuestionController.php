@@ -37,8 +37,7 @@ class QuestionController extends Controller
         foreach (array_filter($request->questions) as $submission) {
             $submission = (object) $submission;
 
-            $question = $submission->id ? Question::find($submission->id) : new Question();
-
+            $question = $submission->id != null ? Question::find($submission->id) : new Question();
 
             $question->value = $submission->value ?? " ";
             $question->category_id = $submission->category_id;
