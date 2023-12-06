@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\InstanceAnswer;
 use App\Http\Requests\StoreInstanceAnswerRequest;
 use App\Http\Requests\UpdateInstanceAnswerRequest;
+use App\Models\Answer;
+use App\Models\Instance;
+use Illuminate\Support\Facades\Auth;
 
 class InstanceAnswerController extends Controller
 {
@@ -29,7 +32,17 @@ class InstanceAnswerController extends Controller
      */
     public function store(StoreInstanceAnswerRequest $request)
     {
-        //
+        $instanceAnswer = $request->instance_answer_id ? InstanceAnswer::findOrFail($request->instance_answer_id) : new InstanceAnswer();
+
+        $answer = Answer::findOrFail($request->answer_id);
+
+        $instanceAnswer->answer_id = $answer->id;
+    
+        $instanceAnswer->question_id = $answer->question->id;
+
+        $instanceAnswer->instance_id = Auth::user()->current_instance_id;
+        $instanceAnswer->save();
+
     }
 
     /**

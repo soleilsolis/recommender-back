@@ -2,7 +2,6 @@ import { Link } from '@inertiajs/react';
 import React, { useState } from 'react';
 import useRoute from '@/Hooks/useRoute';
 import useTypedPage from '@/Hooks/useTypedPage';
-import { Head } from '@inertiajs/react';
 import {
 	Card,
 	Breadcrumbs,
@@ -25,14 +24,11 @@ import AppLayout from '@/Layouts/AppLayout';
 import {
 	ClipboardDocumentListIcon,
 	HomeIcon,
-	MagnifyingGlassIcon,
 	PencilIcon,
 	TrashIcon,
 	XMarkIcon,
 } from '@heroicons/react/24/outline';
 import { PlusIcon } from '@heroicons/react/24/solid';
-import NavLink from '@/Components/NavLink';
-import moment from 'moment';
 import { useForm } from '@inertiajs/react';
 
 interface Props {
@@ -47,7 +43,6 @@ export default function Show({ exam }: Props) {
 		id: null,
 		value: '',
 		correct: 0,
-		delete: false,
 	};
 	const blankQuestion = {
 		id: null,
@@ -56,7 +51,6 @@ export default function Show({ exam }: Props) {
 		exam_id: exam.id,
 		type: 'Multiple Choice',
 		answers: [blankAnswer],
-		delete: false,
 	};
 
 	const [questions, setQuestions] = useState(
@@ -68,7 +62,9 @@ export default function Show({ exam }: Props) {
 
 	const form = useForm({
 		questions,
-		delete: new Array(),
+		deleteQuestions: new Array(),
+		deleteAnswers: new Array(),
+		exam_id: exam.id,
 	});
 
 	const createQuestion = () => {
@@ -76,8 +72,6 @@ export default function Show({ exam }: Props) {
 			errorBag: 'createQuestion',
 			preserveScroll: true,
 		});
-
-		console.log(res);
 	};
 
 	return (
@@ -130,9 +124,6 @@ export default function Show({ exam }: Props) {
 										<CardBody>
 											<div className="grid grid-cols-12 gap-5">
 												<div className="col-span-12 flex items-center justify-between">
-													<Typography variant="h5">
-														#{index + 1}
-													</Typography>
 													<div>
 														<IconButton
 															variant="text"
@@ -155,13 +146,15 @@ export default function Show({ exam }: Props) {
 																questions.length ===
 																1
 															}
-															onClick={() => {
+															onClick={event => {
 																delete questions[
 																	index
 																];
-																form.data.delete.push(
-																	index,
+
+																form.data.deleteQuestions.push(
+																	id,
 																);
+
 																xxx(x + 1);
 															}}
 														>
@@ -179,13 +172,6 @@ export default function Show({ exam }: Props) {
 															] =
 																event.currentTarget.value)
 														}
-														onLoad={() =>
-															this.closest(
-																'div',
-															).classList.add(
-																'h-full',
-															)
-														}
 													>
 														{value}
 													</Textarea>
@@ -193,12 +179,14 @@ export default function Show({ exam }: Props) {
 														<Select
 															label="Category"
 															value={category_id}
-															onChange={event =>
-																(questions[
+															onChange={event => {
+																questions[
 																	index
-																]['category'] =
-																	event)
-															}
+																]['category_id'] =
+																	event;
+
+																xxx(x + 1);
+															}}
 														>
 															{categories.map(
 																category => (
@@ -245,7 +233,7 @@ export default function Show({ exam }: Props) {
 
 									<Card className="col-span-2 p-0 overflow-y-scroll">
 										<CardBody className="h-[300px] ">
-											<table className="w-full mt-5 md:h-max mb-6 table-fixed border-separate border-spacing-y-2.5">
+											<table className="w-full md:h-max mb-6 table-fixed border-separate border-spacing-y-2.5">
 												<thead>
 													<tr>
 														<th className="w-[20%]">
@@ -255,7 +243,26 @@ export default function Show({ exam }: Props) {
 															Value
 														</th>
 														<th className="w-[20%]">
-															Actions
+															<IconButton
+																variant="text"
+																color="green"
+																className="rounded-full"
+																onClick={() => {
+																	questions[
+																		index
+																	][
+																		'answers'
+																	].push(
+																		blankAnswer,
+																	),
+																		xxx(
+																			x +
+																				1,
+																		);
+																}}
+															>
+																<PlusIcon className="w-5 h-5" />
+															</IconButton>
 														</th>
 													</tr>
 												</thead>
@@ -271,11 +278,15 @@ export default function Show({ exam }: Props) {
 																		crossOrigin={
 																			undefined
 																		}
+																		defaultChecked={
+																			answer.correct ===
+																			1
+																				? true
+																				: false
+																		}
 																		onChange={event => {
 																			answer.correct =
 																				!answer.correct;
-																			event.currentTarget.checked =
-																				answer.correct;
 																		}}
 																	/>
 																</td>
@@ -284,50 +295,33 @@ export default function Show({ exam }: Props) {
 																		crossOrigin={
 																			undefined
 																		}
+																		defaultValue={
+																			answer.value
+																		}
 																		onChange={event => {
 																			answer.value =
 																				event.currentTarget.value;
-
-																			console.log(
-																				answer.value,
-																			);
 																		}}
 																	/>
 																</td>
-																<td>
-																	<IconButton
-																		variant="text"
-																		color="green"
-																		className="rounded-full"
-																		onClick={() => {
-																			questions[
-																				index
-																			][
-																				'answers'
-																			].push(
-																				{
-																					id: null,
-																					value: '',
-																					correct: 0,
-																					delete: false,
-																				},
-																			),
-																				xxx(
-																					x +
-																						1,
-																				);
-																		}}
-																	>
-																		<PlusIcon className="w-5 h-5" />
-																	</IconButton>
+																<td className="flex items-center justify-center">
 																	<IconButton
 																		variant="text"
 																		color="red"
-																		className="rounded-full"
+																		className="rounded-full mx-auto"
 																		disabled={
 																			answers.length ===
 																			1
 																		}
+																		onClick={() => {
+																			delete answers[
+																				answerIndex
+																			];
+																			xxx(
+																				x +
+																					1,
+																			);
+																		}}
 																	>
 																		<TrashIcon className="w-5 h-5" />
 																	</IconButton>
@@ -366,11 +360,8 @@ export default function Show({ exam }: Props) {
 						</IconButton>
 					</SpeedDialHandler>
 					<SpeedDialContent>
-						<SpeedDialAction>
-							<ClipboardDocumentListIcon
-								className="h-5 w-5"
-								onClick={createQuestion}
-							/>
+						<SpeedDialAction onClick={createQuestion}>
+							<ClipboardDocumentListIcon className="h-5 w-5" />
 						</SpeedDialAction>
 						<SpeedDialAction>
 							<XMarkIcon className="h-5 w-5" />

@@ -16,6 +16,11 @@ class Instance extends Model
     return $this->belongsTo(Exam::class);
   }
 
+  public function instanceAnswers()
+  {
+    return $this->hasMany(InstanceAnswer::class);
+  }
+
   public function user()
   {
     return $this->belongsTo(User::class);

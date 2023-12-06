@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Question;
 use App\Http\Requests\StoreQuestionRequest;
 use App\Http\Requests\UpdateQuestionRequest;
+use App\Models\Answer;
+use App\Models\Exam;
 use Illuminate\Http\Request;
 
 class QuestionController extends Controller
@@ -30,40 +32,54 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-        $link = "";
 
-        foreach ($request->questions as $question) {
-            $question = (object) $question;
+        foreach (array_filter($request->questions) as $submission) {
+            $submission = (object) $submission;
 
-            $link = "/exam/{$question->exam_id}";
+            $question = $submission->id ? Question::find($submission->id) : new Question();
 
-            if ($question->id) {
-                $edit = Question::findOrFail($question->id);
+            $exam = Exam::find($request->exam_id);
 
-                if ($edit->exam->team_id == $request->user()->currentTeam->id) {
-                    $edit->value = $question->value;
-                    $edit->category_id = $question->category_id;
-                    $edit->exam_id = $question->exam_id;
-                    $edit->type = $question->type;
+            if (!$exam->team_id == $request->user()->currentTeam->id) {
+                continue;
+            }
 
-                    $edit->save();
-                }
-            } else {
+            $question->value = $submission->value ?? " ";
+            $question->category_id = $submission->category_id;
+            $question->exam_id = $submission->exam_id;
+            $question->type = $submission->type;
 
-                if ($question->value) {
-                    $create = Question::create([
-                        'value' => $question->value,
-                        'exam_id' => $question->exam_id,
-                        'category_id' => $question->category_id,
-                        'type' => $question->type,
-                    ]);
+            $question->save();
 
-                    $question->id =  $create->id;
-                }
+            foreach (array_filter($submission->answers) as $submissionAnswer) {
+                $submissionAnswer = (object) $submissionAnswer;
+                $answer = $submissionAnswer->id ? Answer::find($submissionAnswer->id) : new Answer();
+
+                $answer->value = $submissionAnswer->value ?? " ";
+                $answer->correct = $submissionAnswer->correct;
+                $answer->question_id = $question->id;
+                $answer->save();
             }
         }
 
-        return redirect($link);
+
+
+        foreach ($request->deleteQuestions as $id) {
+            $question = Question::find($id);
+
+            if ($question) {
+                $question->delete();
+            }
+        }
+
+        foreach ($request->deleteAnswers as $id) {
+            $answer = Answer::find($id);
+            if ($answer) {
+                $answer->delete();
+            }
+        }
+
+        return to_route("exam.show", ['id' => $request->exam_id]);
     }
 
     /**

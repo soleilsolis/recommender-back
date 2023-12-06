@@ -46,7 +46,7 @@ Route::middleware([
 
     Route::get('/examTypes', [ExamTypeController::class, 'index'])->name('examTypes');
     Route::get('/examTypes/create', [ExamTypeController::class, 'create'])->name('examTypes.create');
- 
+
 
     Route::controller(AnswerController::class)->group(function () {
         Route::get('/answers', 'index');
@@ -67,14 +67,22 @@ Route::middleware([
     });
 
     Route::controller(ExamController::class)->group(function () {
-        Route::get('/exams', 'index')->name('exams.index');
-        Route::get('/exam/create', 'create')->name('exam.create');
-        Route::get('/exam/{id}', 'show');
+        Route::get('/exams', 'index')->name('exams.index')->middleware('owner');
+
+        Route::get('/exam/take/{id}', 'take')->name('exam.take')->middleware('student');
+        Route::get('/exam/current/{page}', 'current')->name('exam.current')->middleware('student');
+        Route::post('/exam/finish', 'finish')->name('exam.finish')->middleware('student');
+
+        Route::get('/exams/student', 'indexStudent')->name('exams.index.student')->middleware('student');
+        Route::get('/exam/create', 'create')->name('exam.create')->middleware('owner');
+        Route::get('/exam/{id}', 'show')->name('exam.show')->middleware('owner');
+        Route::get('/exam/student/{id}', 'showStudent')->name('exams.show.student')->middleware('student');
         Route::get('/exam/edit/{id}', 'edit')->name('exam.edit');
-        Route::post('/exam', 'store')->name('exam.store');
-        Route::put('/exam/{id}/action', 'action');
-        Route::patch('/exam/{id}', 'update');
-        Route::delete('/exam/{id}', 'destroy');
+        Route::post('/exam', 'store')->name('exam.store')->middleware('owner');
+        Route::put('/exam/{id}', 'update')->name('exam.update')->middleware('owner');
+        Route::delete('/exam/{id}', 'destroy')->middleware('owner');
+        Route::get('/exam/currentExam/{question_id}', 'edit')->name('exam.currentExam');
+
     });
 
     Route::controller(ExamTypeController::class)->group(function () {
@@ -97,7 +105,7 @@ Route::middleware([
     Route::controller(InstanceAnswerController::class)->group(function () {
         Route::get('/instanceAnswers', 'index');
         Route::get('/instanceAnswer/{id}', 'show');
-        Route::post('/instanceAnswer', 'store');
+        Route::post('/instanceAnswer', 'store')->name('instanceAnswer.store');
         Route::put('/instanceAnswer/{id}/action', 'action');
         Route::patch('/instanceAnswer/{id}', 'update');
         Route::delete('/instanceAnswer/{id}', 'destroy');

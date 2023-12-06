@@ -11,7 +11,7 @@ import TextInput from '@/Components/TextInput';
 import classNames from 'classnames';
 import { Input, Option, Select, Textarea } from '@material-tailwind/react';
 import { ExamType } from '@/types';
-
+import moment from 'moment';
 interface Props {
 	examTypes: ExamType[];
 	exam: any;
@@ -25,13 +25,13 @@ export default function EditExamForm({ examTypes, exam }: Props) {
 		name: exam.name,
 		exam_type_id: exam.exam_type_id,
 		description: exam.description,
-		date: '',
-		time: '',
+		date: moment(exam.expires_at).format('YYYY-MM-DD'),
+		time: moment(exam.expires_at).format('HH:mm'),
 		attempts: exam.attempts,
 	});
 
 	function editExam() {
-		form.post(route('exam.store'), {
+		form.put(route('exam.update', { id: exam.id }), {
 			errorBag: 'editExam',
 			preserveScroll: true,
 		});
@@ -41,7 +41,7 @@ export default function EditExamForm({ examTypes, exam }: Props) {
 		<FormSection
 			onSubmit={editExam}
 			title={'Exam Details'}
-			description={'Create a new Exam'}
+			description={'Edit Exam'}
 			renderActions={() => (
 				<>
 					<ActionMessage
@@ -137,7 +137,7 @@ export default function EditExamForm({ examTypes, exam }: Props) {
 				<Input
 					id="date"
 					type="date"
-					value={form.data.date}
+					defaultValue={form.data.date}
 					onChange={e => form.setData('date', e.currentTarget.value)}
 					autoFocus
 					crossOrigin={undefined}

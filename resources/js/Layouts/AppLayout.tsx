@@ -23,6 +23,7 @@ export default function AppLayout({
 	children,
 }: PropsWithChildren<Props>) {
 	const page = useTypedPage();
+
 	const route = useRoute();
 	const [showingNavigationDropdown, setShowingNavigationDropdown] =
 		useState(false);
@@ -49,10 +50,22 @@ export default function AppLayout({
 		{
 			name: 'dashboard',
 			label: 'Dashboard',
+			type: ['admin'],
+		},
+		{
+			name: 'dashboard',
+			label: 'Dashboard',
+			type: ['student'],
 		},
 		{
 			name: 'exams.index',
 			label: 'Exams',
+			type: ['admin'],
+		},
+		{
+			name: 'exams.index.student',
+			label: 'Exams',
+			type: ['student'],
 		},
 	];
 
@@ -77,14 +90,23 @@ export default function AppLayout({
 
 								{/* <!-- Navigation Links --> */}
 								<div className="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
-									{navLinks.map(({ name, label }) => (
-										<NavLink
-											href={route(name)}
-											active={route().current(name)}
-										>
-											{label}
-										</NavLink>
-									))}
+									{navLinks
+										.filter(item => {
+											return (
+												item.type.find(
+													element =>
+														element == page.props.auth.user.type,
+												) !== undefined
+											);
+										})
+										.map(({ name, label }) => (
+											<NavLink
+												href={route(name)}
+												active={route().current(name)}
+											>
+												{label}
+											</NavLink>
+										))}
 								</div>
 							</div>
 
@@ -499,7 +521,7 @@ export default function AppLayout({
 
 				{/* <!-- Page Heading --> */}
 				{renderHeader ? (
-					<header className=" dark:bg-gray-800 shadow">
+					<header>
 						<div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
 							{renderHeader()}
 						</div>
@@ -507,7 +529,7 @@ export default function AppLayout({
 				) : null}
 
 				{/* <!-- Page Content --> */}
-				<main className='md:mx-0 mx-4 relative'>{children}</main>
+				<main className="md:mx-0 mx-4 relative">{children}</main>
 			</div>
 		</div>
 	);
