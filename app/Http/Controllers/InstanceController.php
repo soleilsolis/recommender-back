@@ -21,6 +21,7 @@ class InstanceController extends Controller
         $instances = Instance::where([
             'exam_id' =>  $request->exam_id
         ]);
+        
 
         if ($request->all) {
             $instances =  $instances->paginate(15);

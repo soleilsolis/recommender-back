@@ -121,8 +121,8 @@ class ExamController extends Controller
         ])->find($request->id);
 
         $instanceAnswers = InstanceAnswer::with('answer', 'question.category')->where('instance_id', '=', $exam->instances->first()->id ?? 0)->get();
-        
-        
+
+
         $radarMap = $instanceAnswers->groupBy([
             'question.category.name',
             'answer.correct',
@@ -134,7 +134,7 @@ class ExamController extends Controller
             $score += $instanceAnswer->answer->correct;
         }
 
-        foreach ($exam->instances as $instance){
+        foreach ($exam->instances as $instance) {
             $instance->score = 0;
 
             foreach ($instance->instanceAnswers as $instanceAnswer) {
@@ -144,7 +144,7 @@ class ExamController extends Controller
 
         return Inertia::render('Exams/ShowStudent', [
             'exam' => $exam,
-            'score' => $exam->instances->first()->score,
+            'score' => $exam->instances->first() ? $exam->instances->first()->score : 0,
             'total' => $exam->questions->count(),
             'radarMap' => $radarMap,
             'instances' => $exam->instances,
@@ -230,11 +230,11 @@ class ExamController extends Controller
 
         foreach ($instance->exam->questions as $question) {
             $find = InstanceAnswer::where([
-                ['question_id' , '=', $question->id],
-                ['instance_id' , '=', $instance->id],
+                ['question_id', '=', $question->id],
+                ['instance_id', '=', $instance->id],
             ])->first();
 
-            if(! $find) {
+            if (!$find) {
                 InstanceAnswer::create([
                     'question_id' => $question->id,
                     'instance_id' => $instance->id,
