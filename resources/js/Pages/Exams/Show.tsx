@@ -101,7 +101,11 @@ export default function Show({ exam }: Props) {
 						<Link href={`/exam/edit/${exam.id}`}>
 							<Button size="sm">Edit</Button>
 						</Link>
-						<Link href={route('instances.index', {exam_id: exam.id})}>
+						<Link
+							href={route('instances.index', {
+								exam_id: exam.id,
+							})}
+						>
 							<Button size="sm">View Submissions</Button>
 						</Link>
 					</Typography>
@@ -192,8 +196,9 @@ export default function Show({ exam }: Props) {
 															onChange={event => {
 																questions[
 																	index
-																]['category_id'] =
-																	event;
+																][
+																	'category_id'
+																] = event;
 
 																xxx(x + 1);
 															}}
@@ -211,27 +216,6 @@ export default function Show({ exam }: Props) {
 																	</Option>
 																),
 															)}
-														</Select>
-													</div>
-
-													<div className="mt-5">
-														<Select
-															label="Answer Type"
-															value={type}
-															onChange={event =>
-																(questions[
-																	index
-																]['type'] =
-																	event)
-															}
-														>
-															{types.map(type => (
-																<Option
-																	value={type}
-																>
-																	{type}
-																</Option>
-															))}
 														</Select>
 													</div>
 												</div>
@@ -288,7 +272,10 @@ export default function Show({ exam }: Props) {
 																		crossOrigin={
 																			undefined
 																		}
-																		name={"question"+index}
+																		name={
+																			'question' +
+																			index
+																		}
 																		defaultChecked={
 																			answer.correct ===
 																			1
