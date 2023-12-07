@@ -19,7 +19,7 @@ class InstanceController extends Controller
      */
     public function index(Request $request)
     {
-        $instances = Instance::where([
+        $instances = Instance::with('user')->where([
             'exam_id' =>  $request->exam_id
         ]);
         
@@ -120,7 +120,7 @@ class InstanceController extends Controller
         $instance = Instance::where([
             ['user_id', '=', $request->user_id],
             ['exam_id', '=', $request->exam_id],
-        ])->last();
+        ])->latest()->first();
 
         $instance->recommendation = $request->recommendation;
         $instance->save();

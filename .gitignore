@@ -1,7 +1,6 @@
 /.phpunit.cache
 /node_modules
 /public/hot
-/bootstrap/ssr
 /public/storage
 /storage/*.key
 /vendor
