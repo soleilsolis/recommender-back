@@ -121,3 +121,10 @@ Route::middleware([
         Route::delete('/question/{id}', 'destroy');
     });
 });
+
+
+Route::controller(ExamController::class)->group(function () {
+    Route::get('/test/{id}', 'test');
+
+
+});

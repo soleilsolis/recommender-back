@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamp('finished_at')->nullable();
             $table->longText('recommendation')->nullable();
+            $table->longText('recommendation_auto')->nullable();
             $table->timestamps();
         });
     }

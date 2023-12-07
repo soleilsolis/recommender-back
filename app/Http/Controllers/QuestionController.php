@@ -32,8 +32,8 @@ class QuestionController extends Controller
      */
     public function store(Request $request)
     {
-
         $exam = Exam::find($request->exam_id);
+
         foreach (array_filter($request->questions) as $submission) {
             $submission = (object) $submission;
 
@@ -43,6 +43,7 @@ class QuestionController extends Controller
             $question->category_id = $submission->category_id;
             $question->exam_id = $submission->exam_id;
             $question->type = $submission->type;
+            $question->worth = $submission->worth;
 
             $question->save();
 
@@ -56,8 +57,6 @@ class QuestionController extends Controller
                 $answer->save();
             }
         }
-
-
 
         foreach ($request->deleteQuestions as $id) {
             $question = Question::find($id);

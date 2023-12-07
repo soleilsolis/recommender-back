@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('exam_id')->constrained()->cascadeOnDelete();
             $table->foreignId('category_id')->constrained()->cascadeOnDelete();
             $table->enum('type', ['Multiple Choice', 'True or False', 'Written']);
+            $table->integer('worth')->default(1);
             $table->timestamps();
         });
     }

@@ -31,10 +31,10 @@ interface Props {
 export default function Show({ team, availableRoles, permissions }: Props) {
   return (
     <AppLayout
-      title="Team Settings"
+      title="Classroom Settings"
       renderHeader={() => (
         <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-          Team Settings
+          Classroom Settings
         </h2>
       )}
     >

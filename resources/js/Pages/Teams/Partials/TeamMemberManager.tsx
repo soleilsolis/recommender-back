@@ -306,7 +306,7 @@ export default function TeamMemberManager({
         <div>
           <SectionBorder />
 
-          {/* <!-- Manage Team Members --> */}
+          {/* <!-- Manage Classrooms Members --> */}
           <div className="mt-10 sm:mt-0" />
 
           <ActionSection
@@ -330,7 +330,7 @@ export default function TeamMemberManager({
                   </div>
 
                   <div className="flex items-center">
-                    {/* <!-- Manage Team Member Role --> */}
+                    {/* <!-- Manage Classrooms Member Role --> */}
                     {userPermissions.canAddTeamMembers &&
                     availableRoles.length ? (
                       <button

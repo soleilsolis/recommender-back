@@ -331,7 +331,7 @@ function AppLayout({
                           children: "Team Settings"
                         }), page.props.jetstream.canCreateTeams ? /* @__PURE__ */ jsx(DropdownLink, {
                           href: route("teams.create"),
-                          children: "Create New Team"
+                          children: "Create New Classroom"
                         }) : null, /* @__PURE__ */ jsx("div", {
                           className: "border-t border-gray-200 dark:border-gray-600"
                         })]
@@ -515,7 +515,7 @@ function AppLayout({
                 }), page.props.jetstream.canCreateTeams ? /* @__PURE__ */ jsx(ResponsiveNavLink, {
                   href: route("teams.create"),
                   active: route().current("teams.create"),
-                  children: "Create New Team"
+                  children: "Create New Classroom"
                 }) : null, /* @__PURE__ */ jsx("div", {
                   className: "border-t border-gray-200 dark:border-gray-600"
                 }), /* @__PURE__ */ jsx("div", {

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('instance_id')->constrained()->cascadeOnDelete();
             $table->foreignId('question_id')->constrained()->cascadeOnDelete();
             $table->foreignId('answer_id')->constrained()->cascadeOnDelete();
+            $table->longText('value')->nullable();
             $table->timestamps();
         });
     }

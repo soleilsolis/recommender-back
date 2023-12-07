@@ -79,11 +79,11 @@ export default function EditExamForm({ examTypes, exam }: Props) {
 				<InputLabel htmlFor="exam_type_id" value="Exam Type" />
 				<Select
 					id="exam_type_id"
-					value={form.data.exam_type_id}
+					value={exam.exam_type_id}
 					onChange={e => form.setData('exam_type_id', e)}
 				>
 					{examTypes.map(({ id, name }) => (
-						<Option key={id} value={`${id}`}>
+						<Option key={id} value={id}>
 							{name}
 						</Option>
 					))}
@@ -106,7 +106,7 @@ export default function EditExamForm({ examTypes, exam }: Props) {
 					}
 					crossOrigin={undefined}
 					onInput={e => {
-						let text = e.currentTarget.value.match(/^[0-9]{0,10}/g);
+						let text = e.currentTarget.value.match(/^[0-9]{1,10}/g);
 
 						form.setData('attempts', text[0]);
 						e.currentTarget.value = text[0];

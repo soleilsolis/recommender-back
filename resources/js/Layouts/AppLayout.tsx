@@ -158,10 +158,10 @@ export default function AppLayout({
 															'admin' && (
 															<>
 																<div className="block px-4 py-2 text-xs text-gray-400">
-																	Manage Team
+																	Manage Classrooms
 																</div>
 
-																{/* <!-- Team Settings --> */}
+																{/* <!-- Classroom Settings --> */}
 																<DropdownLink
 																	href={route(
 																		'teams.show',
@@ -197,7 +197,7 @@ export default function AppLayout({
 
 														{/* <!-- Team Switcher --> */}
 														<div className="block px-4 py-2 text-xs text-gray-400">
-															Switch Teams
+															Switch Classrooms
 														</div>
 
 														{page.props.auth.user?.all_teams?.map(
@@ -448,10 +448,10 @@ export default function AppLayout({
 										<div className="border-t border-gray-200 dark:border-gray-600"></div>
 
 										<div className="block px-4 py-2 text-xs text-gray-400">
-											Manage Team
+											Manage Classrooms
 										</div>
 
-										{/* <!-- Team Settings --> */}
+										{/* <!-- Classroom Settings --> */}
 										<ResponsiveNavLink
 											href={route('teams.show', [
 												page.props.auth.user
@@ -461,7 +461,7 @@ export default function AppLayout({
 												'teams.show',
 											)}
 										>
-											Team Settings
+											Classroom Settings
 										</ResponsiveNavLink>
 
 										{page.props.jetstream.canCreateTeams ? (
@@ -471,7 +471,7 @@ export default function AppLayout({
 													'teams.create',
 												)}
 											>
-												Create New Team
+												Create New Classroom
 											</ResponsiveNavLink>
 										) : null}
 
@@ -479,7 +479,7 @@ export default function AppLayout({
 
 										{/* <!-- Team Switcher --> */}
 										<div className="block px-4 py-2 text-xs text-gray-400">
-											Switch Teams
+											Switch Classrooms
 										</div>
 										{page.props.auth.user?.all_teams?.map(
 											team => (

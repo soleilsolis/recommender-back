@@ -14,6 +14,11 @@ import AppLayout from '@/Layouts/AppLayout';
 
 import { HomeIcon } from '@heroicons/react/24/outline';
 import { PlusIcon } from '@heroicons/react/24/solid';
+import ReactHtmlParser, {
+	processNodes,
+	convertNodeToElement,
+	htmlparser2,
+} from 'react-html-parser';
 
 interface Props {
 	exam: any;
@@ -81,7 +86,7 @@ export default function ShowStudent({
 		scales: {
 			r: {
 				angleLines: {
-					display: false,
+					display: true,
 				},
 				suggestedMin: 0,
 				suggestedMax: 100,
@@ -166,7 +171,7 @@ export default function ShowStudent({
 						Stats
 					</Typography>
 
-					<Card>
+					<Card className="mb-2">
 						<CardBody>
 							<Typography
 								variant="h4"
@@ -227,29 +232,34 @@ export default function ShowStudent({
 							</div>
 						</CardBody>
 					</Card>
-
-					{instances.length > 0 && (
-						<>
-							<Card className="my-5">
-								<CardBody>
-									<Typography
-										variant="h4"
-										color="black"
-										className="mb-6"
-									>
-										Recommendations
-									</Typography>
-									<Typography
-										variant="lead"
-										color="black"
-										className="mb-6"
-									>
-										{instances[0].recommendation}
-									</Typography>
-								</CardBody>
-							</Card>
-						</>
-					)}
+					<Typography variant="h3" color="black" className="my-5">
+						Recommendations
+					</Typography>
+					<Card className="my-5">
+						<CardBody>
+							{instances.length > 0 &&
+								instances.reverse().map((instance, index) => (
+									<>
+										<Typography
+											variant="h4"
+											color="black"
+											className="mb-6"
+										>
+											Attempt #{index + 1}
+										</Typography>
+										<Typography
+											variant="lead"
+											color="black"
+											className="mb-6 whitespace-pre-line"
+										>
+											{ReactHtmlParser(
+												instance.recommendation_auto,
+											)}
+										</Typography>
+									</>
+								))}{' '}
+						</CardBody>
+					</Card>
 				</div>
 			</div>
 		</AppLayout>

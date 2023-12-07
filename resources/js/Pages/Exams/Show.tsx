@@ -130,7 +130,14 @@ export default function Show({ exam }: Props) {
 					{categories.length > 0 ? (
 						questions.map(
 							(
-								{ id, value, category_id, type, answers },
+								{
+									id,
+									value,
+									category_id,
+									type,
+									worth,
+									answers,
+								},
 								index,
 							) => (
 								<div className="my-6 grid lg:grid-cols-5 grid-cols-1 md:gap-4 gap-y-4">
@@ -189,9 +196,28 @@ export default function Show({ exam }: Props) {
 													>
 														{value}
 													</Textarea>
+
+													<div className="mt-5">
+														<Input
+															label="Worth (Points)"
+															value={worth}
+															onInput={e => {
+																let text =
+																	e.currentTarget.value.match(
+																		/^[0-9]{0,4}/g,
+																	);
+
+																questions[
+																	index
+																]['worth'] =
+																	text[0];
+																xxx(x + 1);
+															}}
+														/>
+													</div>
 													<div className="mt-5">
 														<Select
-															label="Category"
+															label="Subject"
 															value={category_id}
 															onChange={event => {
 																questions[
@@ -216,6 +242,29 @@ export default function Show({ exam }: Props) {
 																	</Option>
 																),
 															)}
+														</Select>
+													</div>
+
+													<div className="mt-5">
+														<Select
+															label="Answer Type"
+															value={type}
+															onChange={event => {
+																questions[
+																	index
+																]['type'] =
+																	event;
+
+																xxx(x + 1);
+															}}
+														>
+															{types.map(type => (
+																<Option
+																	value={type}
+																>
+																	{type}
+																</Option>
+															))}
 														</Select>
 													</div>
 												</div>
