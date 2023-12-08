@@ -260,20 +260,21 @@ class ExamController extends Controller
 
             $description = "";
 
-            if ($percentage === 100) {
+            if ($percentage > 99) {
                 $description = 'You have perfected {categories}!';
             }
 
-            if ($percentage > 85 && $percentage <= 99) {
+            if ($percentage > 85 && $percentage < 99) {
                 $description = 'You are a master in {categories}. Superb!';
             }
 
-            if ($percentage >= 50 && $percentage < 85) {
+            if ($percentage > 50 && $percentage < 85) {
                 $description = "The scores for subject/s {categories} are good. There's still room for improvement!";
             }
 
             if ($percentage < 50) {
                 $description = "Please focus on these areas for next time: {categories}. You have very low mastery on them.";
+                $category = "<span style='color: rgb(244 67 54)'>{$category}</span>";
             }
 
             $recommendations[$description][] = "{$category} ({$percentage}%)";
@@ -298,7 +299,8 @@ class ExamController extends Controller
         $instanceAnswers = InstanceAnswer::where('instance_id', '=',  $instance->id)->get();
 
         $map = array();
-
+        $recommendations = [];
+        
         foreach ($instanceAnswers as $instanceAnswer) {
             $category_name = $instanceAnswer->question->category->name;
 
