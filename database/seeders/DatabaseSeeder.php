@@ -29,6 +29,12 @@ class DatabaseSeeder extends Seeder
             'type' => 'student',
         ]);
 
+        $user = \App\Models\User::factory()->withPersonalTeam()->create([
+            'name' => 'White Face',
+            'email' => 'whiteface1920@gmail.com',
+            'type' => 'student',
+        ]);
+
         $examTypeSeeder = new ExamTypeSeeder();
         $examTypeSeeder->run();
 
