@@ -242,45 +242,60 @@ class ExamController extends Controller
             }
         }
 
-        $instanceAnswers = InstanceAnswer::with('answer', 'question.category')->where('instance_id', '=',  $instance->id)->get();
+        $instanceAnswers = InstanceAnswer::where('instance_id', '=',  $instance->id)->get();
 
-        $map = $instanceAnswers->groupBy([
-            'question.category.name',
-            'answer.correct',
-        ]);
+        $map = array();
 
-        $recommendations = [];
-        $finalText = "";
+        foreach ($instanceAnswers as $instanceAnswer) {
+            $category_name = $instanceAnswer->question->category->name;
 
-        foreach ($map as $category => $results) {
-            $correct = ($results[1] ??= new Collection())->count();
-            $wrong = ($results[0] ??= new Collection())->count();
+            $map[$category_name]['correct'] ??= 0;
+            $map[$category_name]['total'] ??= 0;
 
-            $percentage = number_format($correct / ($correct + $wrong) * 100);
+            $map[$category_name]['total'] += $instanceAnswer->question->worth;
+
+            if ($instanceAnswer->question->type === 'Multiple Choice') {
+            }
+
+            if ($instanceAnswer->question->type === 'Written') {
+            }
+
+            if ($instanceAnswer->question->type === 'True or False') {
+            }
+
+            $map[$category_name]['correct'] += $instanceAnswer->answer->correct + $instanceAnswer->question->worth;
+        }
+
+        foreach ($map as $category => $score) {
+            $percentage = number_format(ceil($score['correct'] / ($score['total']) * 100));
 
             $description = "";
 
-            if ($percentage === 100) {
+            if ($percentage > 99) {
                 $description = 'You have perfected {categories}!';
             }
 
-            if ($percentage > 85 && $percentage <= 99) {
+            if ($percentage > 85 && $percentage < 99) {
                 $description = 'You are a master in {categories}. Superb!';
             }
 
-            if ($percentage >= 50 && $percentage < 85) {
+            if ($percentage > 50 && $percentage < 85) {
                 $description = "The scores for subject/s {categories} are good. There's still room for improvement!";
             }
 
             if ($percentage < 50) {
                 $description = "Please focus on these areas for next time: {categories}. You have very low mastery on them.";
+                $category = "<span style='color: rgb(244 67 54)'>{$category}</span>";
             }
 
-            $recommendations[$description][] = "{$category} ({$percentage}%)";
+            $recommendations[$description][] = "<strong>{$category} ({$percentage}%)</strong>";
         }
 
+        $finalText = "";
+
         foreach ($recommendations as $recommendation => $value) {
-            $categories = implode(",", $value);
+            $value[array_key_last($value)] = count($value) > 1 ? "and " . $value[array_key_last($value)] : $value[array_key_last($value)];
+            $categories = implode(", ", $value);
             $finalText .= str_replace("{categories}", $categories, $recommendation . "\n\n");
         }
 
