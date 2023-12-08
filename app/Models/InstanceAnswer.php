@@ -9,7 +9,7 @@ class InstanceAnswer extends Model
 {
   use HasFactory;
 
-  protected $fillable = ['instance_id', 'question_id', 'answer_id'];
+  protected $fillable = ['instance_id', 'question_id', 'answer_id', 'correct'];
 
   protected $with = ['answer'];
   public function instance()

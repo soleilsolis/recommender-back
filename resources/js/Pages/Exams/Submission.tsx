@@ -10,6 +10,7 @@ import {
 	CardBody,
 	CardHeader,
 	Textarea,
+	Radio,
 } from '@material-tailwind/react';
 import AppLayout from '@/Layouts/AppLayout';
 
@@ -23,6 +24,7 @@ interface Props {
 	total: any;
 	radarMap: any;
 	user: any;
+	instanceAnswers: any;
 }
 
 import {
@@ -45,7 +47,14 @@ ChartJS.register(
 	Legend,
 );
 
-export default function ShowStudent({ exam, score, total, radarMap, user }: Props) {
+export default function ShowStudent({
+	exam,
+	score,
+	total,
+	radarMap,
+	user,
+	instanceAnswers,
+}: Props) {
 	const route = useRoute();
 	const page = useTypedPage();
 	const form = useForm({
@@ -54,27 +63,31 @@ export default function ShowStudent({ exam, score, total, radarMap, user }: Prop
 		exam_id: exam.id,
 	});
 
+	const correctorForm = useForm({
+		instanceAnswers
+	})
+
 	const submitRecommendation = () => {
-		const res =  form.post(route('instance.recommendation.store'), {
+		const res = form.post(route('instance.recommendation.store'), {
 			errorBag: 'submitRecommendation',
 			preserveScroll: true,
-		})
-	}
+		});
+	};
+
+	const saveWrittenAnswers = () => {
+		const res = correctorForm.post(route('instanceAnswers.correct'), {
+			errorBag: 'saveWrittenAnswers',
+			preserveScroll: true,
+		});
+	};
 
 	const radarData = {
-		labels: exam.categories.map(category => category.name),
+		labels: Object.keys(radarMap).map(category => category),
 		datasets: [
 			{
 				label: 'Categories',
 				data: Object.values(radarMap).map(category => {
-					const correct =
-						category[1] != undefined ? category[1].length : 0;
-
-					const incorrect =
-						category[0] != undefined ? category[0].length : 0;
-					const total = correct + incorrect;
-
-					return (correct / total) * 100;
+					return (category.correct / category.total) * 100;
 				}),
 				backgroundColor: 'rgba(0, 255, 0, 0.2)',
 				borderColor: '#00B200',
@@ -115,7 +128,7 @@ export default function ShowStudent({ exam, score, total, radarMap, user }: Prop
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-5 md:gap-4 mt-6">
 						<div>
 							<Typography variant="h2" color="blue-gray">
-							{user.name}'s {exam.name}
+								{user.name}'s {exam.name}
 							</Typography>
 							<Typography
 								variant="h6"
@@ -132,18 +145,6 @@ export default function ShowStudent({ exam, score, total, radarMap, user }: Prop
 						</div>
 					</div>
 
-					{exam.attempts - exam.instances.length != 0 && (
-						<Link href={route('exam.take', { id: exam.id })}>
-							<Button
-								color="green"
-								size="lg"
-								className="flex items-center gap-3 my-5"
-							>
-								<PlusIcon className="h-5 w-5" /> Take Exam
-							</Button>
-						</Link>
-					)}
-
 					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-4 gap-y-2">
 						<Card className=" h-max my-5">
 							<CardBody className="h-max text-center">
@@ -156,15 +157,6 @@ export default function ShowStudent({ exam, score, total, radarMap, user }: Prop
 									}
 								>
 									Score: {score} / {total}
-								</Typography>
-							</CardBody>
-						</Card>
-
-						<Card className=" h-max my-5">
-							<CardBody className="h-max text-center">
-								<Typography variant="h3" color="black">
-									Attempts: {exam.instances.length} /{' '}
-									{exam.attempts}
 								</Typography>
 							</CardBody>
 						</Card>
@@ -188,25 +180,14 @@ export default function ShowStudent({ exam, score, total, radarMap, user }: Prop
 									<div>
 										{Object.values(radarMap).map(
 											(category, index) => {
-												const correct =
-													category[1] != undefined
-														? category[1].length
-														: 0;
-												const incorrect =
-													category[0] != undefined
-														? category[0].length
-														: 0;
-												const total =
-													correct + incorrect;
-
 												return (
 													<>
 														<Typography
 															variant="h5"
 															className="mb-2"
 															color={
-																(correct /
-																	total) *
+																(category.correct /
+																	category.total) *
 																	100 <
 																50
 																	? 'red'
@@ -218,7 +199,8 @@ export default function ShowStudent({ exam, score, total, radarMap, user }: Prop
 																	radarMap,
 																)[index]
 															}{' '}
-															: {correct} /{total}
+															: {category.correct}{' '}
+															/{category.total}
 														</Typography>
 													</>
 												);
@@ -235,7 +217,61 @@ export default function ShowStudent({ exam, score, total, radarMap, user }: Prop
 							</div>
 						</CardBody>
 					</Card>
+					<Card className="my-5">
+						<CardBody>
+							{instanceAnswers.map(
+								(instanceAnswer, index) =>
+									instanceAnswer.question.type ===
+										'Written' && (
+										<>
+											<Typography
+												variant="h4"
+												color="black"
+											>
+												Question {index + 1}
+											</Typography>
+											<Typography
+												variant="lead"
+												color="black"
+											>
+												{instanceAnswer.question.value}
+											</Typography>
+											<Typography
+												variant="lead"
+												color="black"
+											>
+												Answer : {instanceAnswer.value}
+											</Typography>
 
+											<Radio
+												label="Correct"
+												name={`question${index + 1}`}
+												defaultChecked={
+													instanceAnswer.correct
+												}
+												onChange={event => {
+													{instanceAnswer.correct = 1;
+													console.log(instanceAnswer.correct)}
+												}}
+											/>
+
+											<Radio
+												label="Incorrect"
+												name={`question${index + 1}`}
+												defaultChecked={
+													instanceAnswer.correct === 0
+												}
+												onChange={event => {
+													{instanceAnswer.correct = 0;
+													console.log(instanceAnswer.correct)}
+												}}
+											/>
+										</>
+									),
+							)}
+							<Button className='block mt-5' onClick={saveWrittenAnswers}>Save</Button>
+						</CardBody>
+					</Card>
 					<Card className="my-5">
 						<CardBody>
 							<Typography
@@ -246,10 +282,14 @@ export default function ShowStudent({ exam, score, total, radarMap, user }: Prop
 								Recommendations
 							</Typography>
 
-							<div className='my-5'>
-								<Textarea label='Recommendations' onChange={event => form.data.recommendation = event.currentTarget.value}>
-
-								</Textarea>
+							<div className="my-5">
+								<Textarea
+									label="Recommendations"
+									onChange={event =>
+										(form.data.recommendation =
+											event.currentTarget.value)
+									}
+								></Textarea>
 							</div>
 
 							<Button onClick={submitRecommendation}>Save</Button>

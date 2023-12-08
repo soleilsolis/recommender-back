@@ -121,32 +121,20 @@ class ExamController extends Controller
             ],
         ])->find($request->id);
 
-        $instanceAnswers = InstanceAnswer::with('answer', 'question.category')->where('instance_id', '=', $exam->instances->first()->id ?? 0)->get();
-
-
-        $radarMap = $instanceAnswers->groupBy([
-            'question.category.name',
-            'answer.correct',
-        ]);
-
         $score = 0;
+        $total = 0;
 
-        foreach ($instanceAnswers as $instanceAnswer) {
-            $score += $instanceAnswer->answer->correct;
-        }
+        $radarMap = $exam->instances->first() ? $this->calculator($exam->instances->first()->instanceAnswers) : new Collection();
 
-        foreach ($exam->instances as $instance) {
-            $instance->score = 0;
-
-            foreach ($instance->instanceAnswers as $instanceAnswer) {
-                $instance->score += $instanceAnswer->answer->correct;
-            }
+        foreach ($radarMap as $map) {
+            $score += $map['correct'];
+            $total += $map['total'];
         }
 
         return Inertia::render('Exams/ShowStudent', [
             'exam' => $exam,
-            'score' => $exam->instances->first() ? $exam->instances->first()->score : 0,
-            'total' => $exam->questions->count(),
+            'score' => $score,
+            'total' => $total,
             'radarMap' => $radarMap,
             'instances' => $exam->instances,
         ]);
@@ -196,7 +184,7 @@ class ExamController extends Controller
         ])->find($user->current_instance_id);
         $exam = $instance->exam;
 
-        $question = Question::with('answers')->where('exam_id', '=', $exam->id)->paginate(1);
+        $question = Question::with(['answers' => ['question']])->where('exam_id', '=', $exam->id)->paginate(1);
 
         try {
             foreach ($question[0]->answers as $answer) {
@@ -215,6 +203,37 @@ class ExamController extends Controller
 
             ])->get(),
         ]);
+    }
+
+    public static function calculator($instanceAnswers)
+    {
+        $map = array();
+
+        foreach ($instanceAnswers as $instanceAnswer) {
+            $category_name = $instanceAnswer->question->category->name;
+
+            $map[$category_name]['correct'] ??= 0;
+            $map[$category_name]['total'] ??= 0;
+
+            $map[$category_name]['total'] += $instanceAnswer->question->worth;
+
+            if ($instanceAnswer->question->type === 'Multiple Choice') {
+                $map[$category_name]['correct'] += $instanceAnswer->answer->correct ? $instanceAnswer->question->worth : 0;
+            }
+
+            if ($instanceAnswer->question->type === 'Written') {
+                $map[$category_name]['correct'] += $instanceAnswer->correct ? $instanceAnswer->question->worth : 0;
+            }
+
+            if ($instanceAnswer->question->type === 'True or False') {
+            }
+        }
+
+        $map = collect($map)->sortByDesc(function (array $category, string $key) {
+            return $category['correct'] / $category['total'];
+        });
+
+        return $map;
     }
 
     public function finish(Request $request)
@@ -242,21 +261,14 @@ class ExamController extends Controller
             }
         }
 
-        $instanceAnswers = InstanceAnswer::with('answer', 'question.category')->where('instance_id', '=',  $instance->id)->get();
+        $instanceAnswers = InstanceAnswer::where('instance_id', '=',  $instance->id)->get();
 
-        $map = $instanceAnswers->groupBy([
-            'question.category.name',
-            'answer.correct',
-        ]);
+        $map = $this->calculator($instanceAnswers);
 
         $recommendations = [];
-        $finalText = "";
 
-        foreach ($map as $category => $results) {
-            $correct = ($results[1] ??= new Collection())->count();
-            $wrong = ($results[0] ??= new Collection())->count();
-
-            $percentage = number_format($correct / ($correct + $wrong) * 100);
+        foreach ($map as $category => $score) {
+            $percentage = number_format(ceil($score['correct'] / ($score['total']) * 100));
 
             $description = "";
 
@@ -268,7 +280,7 @@ class ExamController extends Controller
                 $description = 'You are a master in {categories}. Superb!';
             }
 
-            if ($percentage > 50 && $percentage < 85) {
+            if ($percentage > 49 && $percentage < 85) {
                 $description = "The scores for subject/s {categories} are good. There's still room for improvement!";
             }
 
@@ -277,11 +289,14 @@ class ExamController extends Controller
                 $category = "<span style='color: rgb(244 67 54)'>{$category}</span>";
             }
 
-            $recommendations[$description][] = "{$category} ({$percentage}%)";
+            $recommendations[$description][] = "<strong>{$category} ({$percentage}%)</strong>";
         }
 
+        $finalText = "";
+
         foreach ($recommendations as $recommendation => $value) {
-            $categories = implode(",", $value);
+            $value[array_key_last($value)] = count($value) > 1 ? "and " . $value[array_key_last($value)] : $value[array_key_last($value)];
+            $categories = implode(", ", $value);
             $finalText .= str_replace("{categories}", $categories, $recommendation . "\n\n");
         }
 
@@ -298,28 +313,9 @@ class ExamController extends Controller
 
         $instanceAnswers = InstanceAnswer::where('instance_id', '=',  $instance->id)->get();
 
-        $map = array();
-        $recommendations = [];
-        
-        foreach ($instanceAnswers as $instanceAnswer) {
-            $category_name = $instanceAnswer->question->category->name;
+        $map = $this->calculator($instanceAnswers);
 
-            $map[$category_name]['correct'] ??= 0;
-            $map[$category_name]['total'] ??= 0;
-
-            $map[$category_name]['total'] += $instanceAnswer->question->worth;
-
-            if ($instanceAnswer->question->type === 'Multiple Choice') {
-            }
-
-            if ($instanceAnswer->question->type === 'Written') {
-            }
-
-            if ($instanceAnswer->question->type === 'True or False') {
-            }
-
-            $map[$category_name]['correct'] += $instanceAnswer->answer->correct + $instanceAnswer->question->worth;
-        }
+        dd($map);
 
         foreach ($map as $category => $score) {
             $percentage = number_format(ceil($score['correct'] / ($score['total']) * 100));
@@ -334,7 +330,7 @@ class ExamController extends Controller
                 $description = 'You are a master in {categories}. Superb!';
             }
 
-            if ($percentage > 50 && $percentage < 85) {
+            if ($percentage > 49 && $percentage < 85) {
                 $description = "The scores for subject/s {categories} are good. There's still room for improvement!";
             }
 

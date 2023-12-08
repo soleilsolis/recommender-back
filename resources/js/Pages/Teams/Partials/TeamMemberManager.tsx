@@ -136,7 +136,7 @@ export default function TeamMemberManager({
             onSubmit={addTeamMember}
             title={'Add Classroom Member'}
             description={
-              'Add a new team member to your team, allowing them to collaborate with you.'
+              'Add a new student to your classroom, allowing them to collaborate with you.'
             }
             renderActions={() => (
               <>
@@ -161,7 +161,7 @@ export default function TeamMemberManager({
             <div className="col-span-6">
               <div className="max-w-xl text-sm text-gray-600 dark:text-gray-400">
                 Please provide the email address of the person you would like to
-                add to this team.
+                add to this clasroom.
               </div>
             </div>
 
@@ -270,7 +270,7 @@ export default function TeamMemberManager({
           <ActionSection
             title={'Pending Team Invitations'}
             description={
-              'These people have been invited to your team and have been sent an invitation email. They may join the team by accepting the email invitation.'
+              'These people have been invited to your classroom and have been sent an invitation email. They may join the classroom by accepting the email invitation.'
             }
           >
             {/* <!-- Pending Team Member Invitation List --> */}
@@ -311,7 +311,7 @@ export default function TeamMemberManager({
 
           <ActionSection
             title={'Team Members'}
-            description={'All of the people that are part of this team.'}
+            description={'All of the people that are part of this classroom.'}
           >
             {/* <!-- Team Member List --> */}
             <div className="space-y-6">
@@ -489,7 +489,7 @@ export default function TeamMemberManager({
         onClose={() => setTeamMemberBeingRemoved(null)}
       >
         <ConfirmationModal.Content title={'Remove Team Member'}>
-          Are you sure you would like to remove this person from the team?
+          Are you sure you would like to remove this person from the classroom?
         </ConfirmationModal.Content>
         <ConfirmationModal.Footer>
           <SecondaryButton onClick={() => setTeamMemberBeingRemoved(null)}>

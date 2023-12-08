@@ -55,11 +55,16 @@ export default function Show({
 	const page = useTypedPage();
 	const [answer_id, setAnswerId] = useState();
 	const [open, setOpen] = useState(false);
+	const [x, xxx] = useState();
 
 	const handleOpen = () => setOpen(!open);
 
 	const form = useForm({
 		answer_id,
+		question_id: question.data[0].id,
+		url: '',
+		page: '',
+		value: '',
 		instance_answer_id:
 			instanceAnswers[0] != undefined ? instanceAnswers[0].id : null,
 	});
@@ -124,7 +129,8 @@ export default function Show({
 									Question {question.current_page}
 								</Typography>
 
-								{instanceAnswers[0] != undefined ? (
+								{instanceAnswers[0] != null ||
+								instanceAnswers[0] != undefined ? (
 									<Typography
 										variant="h4"
 										color="green"
@@ -161,6 +167,7 @@ export default function Show({
 												'Multiple Choice' && (
 												<>
 													<Radio
+														key={answer.id}
 														crossOrigin={undefined}
 														name="instanceAnswer"
 														defaultChecked={
@@ -183,6 +190,9 @@ export default function Show({
 														onChange={() => {
 															form.data.answer_id =
 																answer.id;
+
+															form.data.question_id =
+																answer.question.id;
 															form.post(
 																route(
 																	'instanceAnswer.store',
@@ -201,26 +211,60 @@ export default function Show({
 											)}
 										</>
 									))}
+
+									{question.data[0].type === 'Written' && (
+										<Textarea
+											label="Answer"
+											onChange={event => {
+												form.data.value =
+													event.currentTarget.value;
+											}}
+										>
+											{form.data.value}
+										</Textarea>
+									)}
 								</CardBody>
 							</Card>
 						</CardBody>
 						<CardFooter className="flex items-center justify-between border-t border-blue-gray-50 p-4">
 							{question.prev_page_url ? (
-								<Link href={question.prev_page_url}>
-									<Button variant="outlined" size="sm">
-										Previous
-									</Button>
-								</Link>
+								<Button
+									variant="outlined"
+									size="sm"
+									onClick={() => {
+										form.data.url = question.prev_page_url;
+										form.post(
+											route('instanceAnswer.store'),
+											{
+												errorBag: 'submitAnswer',
+												preserveScroll: true,
+											},
+										);
+									}}
+								>
+									Previous
+								</Button>
 							) : (
 								<span></span>
 							)}
 
 							{question.next_page_url && (
-								<Link href={question.next_page_url}>
-									<Button variant="outlined" size="sm">
-										Next
-									</Button>
-								</Link>
+								<Button
+									variant="outlined"
+									size="sm"
+									onClick={() => {
+										form.data.url = question.next_page_url;
+										form.post(
+											route('instanceAnswer.store'),
+											{
+												errorBag: 'submitAnswer',
+												preserveScroll: true,
+											},
+										);
+									}}
+								>
+									Next
+								</Button>
 							)}
 						</CardFooter>
 					</Card>

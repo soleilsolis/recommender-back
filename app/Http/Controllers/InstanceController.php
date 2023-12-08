@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\Http\Controllers\ExamController;
 
 class InstanceController extends Controller
 {
@@ -22,7 +23,7 @@ class InstanceController extends Controller
         $instances = Instance::with('user')->where([
             'exam_id' =>  $request->exam_id
         ]);
-        
+
 
         if ($request->all) {
             $instances =  $instances->paginate(15);
@@ -30,19 +31,35 @@ class InstanceController extends Controller
             $instances =  $instances->paginate($instances->count());
         }
 
-        foreach ($instances as $instance){
-            $instance->score = 0;
-            $instance->total = $instance->exam->questions->count();
-
-            foreach ($instance->instanceAnswers as $instanceAnswer) {
-                $instance->score += $instanceAnswer->answer->correct;
-            }
-        }
+        $instances = $this->calculator($instances);
 
         $paginator = $instances;
         $exam = Exam::findOrFail($request->exam_id);
 
         return Inertia::render('Exams/Instances', compact('paginator', 'exam'));
+    }
+
+    public function calculator($instances)
+    {
+        foreach ($instances as $instance) {
+            $instance->score = 0;
+            $instance->total = 0;
+
+            foreach ($instance->exam->questions as $question) {
+                $instance->total += $question->worth;
+            }
+            foreach ($instance->instanceAnswers as $instanceAnswer) {
+                if ($instanceAnswer->question->type === 'Multiple Choice') {
+                    $instance->score += $instanceAnswer->answer->correct ? $instanceAnswer->question->worth : 0;
+                }
+
+                if ($instanceAnswer->question->type === 'Written') {
+                    $instance->score += $instanceAnswer->correct ? $instanceAnswer->question->worth : 0;
+                }
+            }
+        }
+
+        return $instances;
     }
 
     /**
@@ -66,53 +83,40 @@ class InstanceController extends Controller
      */
     public function show(Instance $instance, Request $request, Exam $exam)
     {
-        $user_id = $request->user_id;
-        $user = User::find($user_id);
+        $instance = Instance::find($request->instance_id);
+        $user = $instance->user;
 
-        $exam = $exam->with([
-            'examType',
-            'instances' => function (Builder $query) use ($user_id) {
-                $query->where('user_id', '=', $user_id)->orderBy('created_at', 'desc');
-            },
-            'questions' => [
-                'answers'
-            ],
-            'categories',
-            'team' => [
-                'owner'
-            ],
-        ])->find($request->exam_id);
+        $user_id = $instance->user->id;
 
-        $instanceAnswers = InstanceAnswer::with('answer', 'question.category')->where('instance_id', '=', $exam->instances->first()->id ?? 0)->get();
+        $exam = $instance->exam;
+        $exam->team = $exam->team;
+        $exam->instances = $exam->instances;
+        $exam->team->owner = $exam->team->owner;
+
+        $instanceAnswers =  $instance->instanceAnswers;
         
-        
-        $radarMap = $instanceAnswers->groupBy([
-            'question.category.name',
-            'answer.correct',
-        ]);
+        foreach ($instanceAnswers as $instanceAnswer) {
+            $instanceAnswer->question = $instanceAnswer->question;
+        }
 
         $score = 0;
+        $total = 0;
 
-        foreach ($instanceAnswers as $instanceAnswer) {
-            $score += $instanceAnswer->answer->correct;
+        $radarMap = ExamController::calculator($instanceAnswers);
+
+        foreach ($radarMap as $map) {
+            $score += $map['correct'];
+            $total += $map['total'];
         }
-
-        foreach ($exam->instances as $instance){
-            $instance->score = 0;
-
-            foreach ($instance->instanceAnswers as $instanceAnswer) {
-                $instance->score += $instanceAnswer->answer->correct;
-            }
-        }
-
+        
         return Inertia::render('Exams/Submission', [
             'exam' => $exam,
-            'score' => $exam->instances->first()->score,
-            'total' => $exam->questions->count(),
+            'score' =>  $score,
+            'total' => $total,
             'radarMap' => $radarMap,
             'user' => $user,
+            'instanceAnswers' => $instanceAnswers,
         ]);
-        
     }
 
     public function recommend(Request $request)
@@ -124,8 +128,9 @@ class InstanceController extends Controller
 
         $instance->recommendation = $request->recommendation;
         $instance->save();
-      
     }
+
+
 
     /**
      * Show the form for editing the specified resource.

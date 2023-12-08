@@ -5,10 +5,10 @@ import React from 'react';
 export default function Create() {
   return (
     <AppLayout
-      title="Create Team"
+      title="Create Classroom"
       renderHeader={() => (
         <h2 className="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-          Create Team
+          Create Classroom
         </h2>
       )}
     >

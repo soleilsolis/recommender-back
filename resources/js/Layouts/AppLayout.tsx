@@ -174,7 +174,7 @@ export default function AppLayout({
 																		],
 																	)}
 																>
-																	Team
+																	Classroom
 																	Settings
 																</DropdownLink>
 
@@ -187,7 +187,7 @@ export default function AppLayout({
 																		)}
 																	>
 																		Create
-																		New Team
+																		New Classroom
 																	</DropdownLink>
 																) : null}
 

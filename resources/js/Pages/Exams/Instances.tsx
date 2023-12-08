@@ -158,7 +158,7 @@ export default function Attempts({ paginator, exam }: Props) {
 														</td>
 														<td className={classes}>
 															<NavLink
-																href={`/instance/show/${exam.id}/${user.id}`}
+																href={`/instance/show/${id}`}
 															>
 																<Tooltip content="View Attempt">
 																	<IconButton variant="text">

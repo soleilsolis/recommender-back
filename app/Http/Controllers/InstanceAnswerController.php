@@ -7,7 +7,11 @@ use App\Http\Requests\StoreInstanceAnswerRequest;
 use App\Http\Requests\UpdateInstanceAnswerRequest;
 use App\Models\Answer;
 use App\Models\Instance;
+use App\Models\Question;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Inertia\Inertia;
 
 class InstanceAnswerController extends Controller
 {
@@ -32,17 +36,50 @@ class InstanceAnswerController extends Controller
      */
     public function store(StoreInstanceAnswerRequest $request)
     {
-        $instanceAnswer = $request->instance_answer_id ? InstanceAnswer::findOrFail($request->instance_answer_id) : new InstanceAnswer();
+        $instanceAnswer = InstanceAnswer::where([
+            ['question_id', '=', $request->question_id],
+            ['instance_id', '=', Auth::user()->current_instance_id],
+        ])->first() ?? new InstanceAnswer();
 
-        $answer = Answer::findOrFail($request->answer_id);
+        //   dd($request->question_id);
 
-        $instanceAnswer->answer_id = $answer->id;
-    
-        $instanceAnswer->question_id = $answer->question->id;
+        $question = Question::findOrFail($request->question_id);
 
+        $instanceAnswer->question_id = $question->id;
         $instanceAnswer->instance_id = Auth::user()->current_instance_id;
-        $instanceAnswer->save();
 
+
+        if ($question->type !== 'Written' && $request->answer_id) {
+            $answer = Answer::findOrFail($request->answer_id);
+            $instanceAnswer->answer_id = $answer->id;
+
+            if ($instanceAnswer->answer_id) {
+                $instanceAnswer->save();
+            }
+        }
+
+        if ($question->type === 'Written') {
+            if ($request->value) {
+                $instanceAnswer->value = $request->value;
+                $instanceAnswer->save();
+            }
+        }
+
+        if ($request->url) {
+            //return Inertia::location($request->url);
+            return redirect($request->url);
+        }
+    }
+
+    public function correct(Request $request)
+    {
+        foreach ($request->instanceAnswers as $submission) {
+            $instanceAnswer = InstanceAnswer::find($submission['id']);
+            $instanceAnswer->correct = $submission['correct'];
+            $instanceAnswer->save();
+        }
+
+        return Inertia::location('/instances/1');
     }
 
     /**

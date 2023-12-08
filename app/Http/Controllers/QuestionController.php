@@ -56,6 +56,12 @@ class QuestionController extends Controller
                 $answer->question_id = $question->id;
                 $answer->save();
             }
+
+            if ($submission->type === 'Written') {
+                foreach ($question->answers as $answer) {
+                    $answer->delete();
+                }
+            }
         }
 
         foreach ($request->deleteQuestions as $id) {

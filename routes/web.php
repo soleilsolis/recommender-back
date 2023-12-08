@@ -71,7 +71,7 @@ Route::middleware([
         Route::get('/exams', 'index')->name('exams.index')->middleware('owner');
 
         Route::get('/exam/take/{id}', 'take')->name('exam.take')->middleware('student');
-        Route::get('/exam/current/{page}', 'current')->name('exam.current')->middleware('student');
+        Route::get('/exam/current/1', 'current')->name('exam.current')->middleware('student');
         Route::post('/exam/finish', 'finish')->name('exam.finish')->middleware('student');
 
         Route::get('/exams/student', 'indexStudent')->name('exams.index.student')->middleware('student');
@@ -96,7 +96,7 @@ Route::middleware([
     Route::controller(InstanceController::class)->group(function () {
         Route::get('/instances/{exam_id}', 'index')->name('instances.index');
         Route::post('/instance/recommendation', 'recommend')->name('instance.recommendation.store');
-        Route::get('/instance/show/{exam_id}/{user_id}', 'show');
+        Route::get('/instance/show/{instance_id}', 'show');
         Route::post('/instance', 'store');
         Route::put('/instance/{id}/action', 'action');
         Route::patch('/instance/{id}', 'update');
@@ -107,6 +107,7 @@ Route::middleware([
         Route::get('/instanceAnswers', 'index');
         Route::get('/instanceAnswer/{id}', 'show');
         Route::post('/instanceAnswer', 'store')->name('instanceAnswer.store');
+        Route::post('/instanceAnswer/correct', 'correct')->name('instanceAnswers.correct');
         Route::put('/instanceAnswer/{id}/action', 'action');
         Route::patch('/instanceAnswer/{id}', 'update');
         Route::delete('/instanceAnswer/{id}', 'destroy');
@@ -125,6 +126,4 @@ Route::middleware([
 
 Route::controller(ExamController::class)->group(function () {
     Route::get('/test/{id}', 'test');
-
-
 });

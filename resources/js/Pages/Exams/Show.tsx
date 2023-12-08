@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useRoute from '@/Hooks/useRoute';
 import useTypedPage from '@/Hooks/useTypedPage';
 import {
@@ -64,7 +64,7 @@ export default function Show({ exam }: Props) {
 		exam.questions.length === 0 ? [blankQuestion] : exam.questions,
 	);
 
-	const types = ['Multiple Choice', 'True or False', 'Written'];
+	const types = ['Multiple Choice', 'Written'];
 	const [x, xxx] = useState(1);
 
 	const form = useForm({
@@ -98,16 +98,6 @@ export default function Show({ exam }: Props) {
 					</Breadcrumbs>
 					<Typography variant="h2" color="blue-gray">
 						{exam.name} - ({exam.attempts} Attempts){' '}
-						<Link href={`/exam/edit/${exam.id}`}>
-							<Button size="sm">Edit</Button>
-						</Link>
-						<Link
-							href={route('instances.index', {
-								exam_id: exam.id,
-							})}
-						>
-							<Button size="sm">View Submissions</Button>
-						</Link>
 					</Typography>
 					<Typography
 						variant="h6"
@@ -121,6 +111,21 @@ export default function Show({ exam }: Props) {
 						/>
 						{exam.team.owner.name} - {exam.team.name}
 					</Typography>
+
+					<div>
+						<Link href={`/exam/edit/${exam.id}`}>
+							<Button size="sm">Edit</Button>
+						</Link>
+						<Link
+							href={route('instances.index', {
+								exam_id: exam.id,
+							})}
+						>
+							<Button size="sm" className="ml-2">
+								View Submissions
+							</Button>
+						</Link>
+					</div>
 
 					<br></br>
 					<Typography variant="h4" color="blue-gray">
@@ -254,6 +259,26 @@ export default function Show({ exam }: Props) {
 																	index
 																]['type'] =
 																	event;
+																questions[
+																	index
+																]['answers'] =
+																	[];
+																if (
+																	questions[
+																		index
+																	][
+																		'type'
+																	] !==
+																	'Written'
+																) {
+																	questions[
+																		index
+																	][
+																		'answers'
+																	].push(
+																		blankAnswer,
+																	);
+																}
 
 																xxx(x + 1);
 															}}
@@ -290,6 +315,14 @@ export default function Show({ exam }: Props) {
 																variant="text"
 																color="green"
 																className="rounded-full"
+																disabled={
+																	questions[
+																		index
+																	][
+																		'type'
+																	] ===
+																	'Written'
+																}
 																onClick={() => {
 																	questions[
 																		index
@@ -357,8 +390,12 @@ export default function Show({ exam }: Props) {
 																		color="red"
 																		className="rounded-full mx-auto"
 																		disabled={
-																			answers.length ===
-																			1
+																			questions[
+																				index
+																			][
+																				'type'
+																			] ===
+																			'Written'
 																		}
 																		onClick={() => {
 																			delete answers[

@@ -18,6 +18,7 @@ return new class extends Migration
       $table->foreignId('team_id')->constrained()->cascadeOnDelete();
       $table->text('description')->nullable();
       $table->integer('attempts')->nullable();
+      $table->bigInteger('limit')->nullable();
       $table->timestamp('expires_at')->nullable();
       $table->timestamps();
       $table->softDeletes();

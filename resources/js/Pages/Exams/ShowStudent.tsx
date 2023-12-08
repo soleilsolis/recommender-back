@@ -65,14 +65,7 @@ export default function ShowStudent({
 			{
 				label: 'Categories',
 				data: Object.values(radarMap).map(category => {
-					const correct =
-						category[1] != undefined ? category[1].length : 0;
-
-					const incorrect =
-						category[0] != undefined ? category[0].length : 0;
-					const total = correct + incorrect;
-
-					return (correct / total) * 100;
+					return (category.correct / category.total) * 100;
 				}),
 				backgroundColor: 'rgba(0, 255, 0, 0.2)',
 				borderColor: '#00B200',
@@ -185,25 +178,15 @@ export default function ShowStudent({
 									<div>
 										{Object.values(radarMap).map(
 											(category, index) => {
-												const correct =
-													category[1] != undefined
-														? category[1].length
-														: 0;
-												const incorrect =
-													category[0] != undefined
-														? category[0].length
-														: 0;
-												const total =
-													correct + incorrect;
-
+								
 												return (
 													<>
 														<Typography
 															variant="h5"
 															className="mb-2"
 															color={
-																(correct /
-																	total) *
+																(category.correct /
+																	category.total) *
 																	100 <
 																50
 																	? 'red'
@@ -215,7 +198,7 @@ export default function ShowStudent({
 																	radarMap,
 																)[index]
 															}{' '}
-															: {correct} /{total}
+															: {category.correct} /{category.total}
 														</Typography>
 													</>
 												);
