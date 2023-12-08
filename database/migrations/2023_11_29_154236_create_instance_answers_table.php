@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('instance_id')->constrained()->cascadeOnDelete();
             $table->foreignId('question_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('answer_id')->cascadeOnDelete();
+            $table->foreignId('answer_id')->nullable()->cascadeOnDelete();
             $table->tinyInteger('correct')->default(0);
 
             $table->longText('value')->nullable();
