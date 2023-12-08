@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
         // \App\Models\User::factory(10)->create();
 
         $user = \App\Models\User::factory()->withPersonalTeam()->create([
-            'name' => 'Administrator',
-            'email' => 'admin@example.com',
+            'name' => 'Professor',
+            'email' => 'professor@plpasig.com',
             'type' => 'admin',
         ]);
 
