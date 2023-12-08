@@ -19,13 +19,13 @@ class DatabaseSeeder extends Seeder
 
         $user = \App\Models\User::factory()->withPersonalTeam()->create([
             'name' => 'Professor',
-            'email' => 'professor@plpasig.com',
+            'email' => 'professor@plpasig.site',
             'type' => 'admin',
         ]);
 
         $user = \App\Models\User::factory()->withPersonalTeam()->create([
             'name' => 'Student',
-            'email' => 'student@plpasig.com',
+            'email' => 'student@plpasig.site',
             'type' => 'student',
         ]);
 
