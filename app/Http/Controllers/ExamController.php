@@ -78,6 +78,7 @@ class ExamController extends Controller
             'exam_type_id' => $request->exam_type_id,
             'description' => $request->description,
             'attempts' => $request->attempts,
+            'limit' => $request->limit,
             'expires_at' => Carbon::parse($request->date)->setTimeFromTimeString($request->time),
             'team_id' => $request->user()->currentTeam->id,
         ]);
@@ -246,6 +247,12 @@ class ExamController extends Controller
 
         $instance = Instance::find($current_instance_id);
 
+    
+        if(!$instance )
+        {
+            return Inertia::location('/exams/student');
+        }
+
         foreach ($instance->exam->questions as $question) {
             $find = InstanceAnswer::where([
                 ['question_id', '=', $question->id],
@@ -386,6 +393,7 @@ class ExamController extends Controller
         $exam->exam_type_id = $request->exam_type_id;
         $exam->description = $request->description;
         $exam->attempts = $request->attempts;
+        $exam->limit = $request->limit;
         $exam->expires_at = Carbon::parse($request->date)->setTimeFromTimeString($request->time);
         $exam->team_id = $request->user()->currentTeam->id;
         $exam->save();

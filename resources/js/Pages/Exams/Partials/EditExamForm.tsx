@@ -28,6 +28,7 @@ export default function EditExamForm({ examTypes, exam }: Props) {
 		date: moment(exam.expires_at).format('YYYY-MM-DD'),
 		time: moment(exam.expires_at).format('HH:mm'),
 		attempts: exam.attempts,
+		limit: exam.limit,
 	});
 
 	function editExam() {
@@ -113,6 +114,26 @@ export default function EditExamForm({ examTypes, exam }: Props) {
 					}}
 				/>
 				<InputError message={form.errors.attempts} className="mt-2" />
+			</div>
+
+			<div className="col-span-6 sm:col-span-4">
+				<InputLabel htmlFor="limit" value="Time Limit  (Minutes)" />
+
+				<Input
+					id="limit"
+					type="text"
+					value={form.data.limit}
+					crossOrigin={undefined}
+					onInput={e => {
+						let text = e.currentTarget.value.match(
+							/^[0-9]{0,10}/g,
+						)
+
+						form.setData('limit', text[0])
+						e.currentTarget.value = text[0]
+					}}
+				/>
+				<InputError message={form.errors.limit} className="mt-2" />
 			</div>
 
 			<div className="col-span-6 sm:col-span-4">

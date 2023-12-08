@@ -1,5 +1,5 @@
 import { router } from '@inertiajs/core';
-import { Link, Head } from '@inertiajs/react';
+import { Link, Head, useForm } from '@inertiajs/react';
 import classNames from 'classnames';
 import React, { PropsWithChildren, useState } from 'react';
 import useRoute from '@/Hooks/useRoute';
@@ -12,6 +12,7 @@ import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Team } from '@/types';
 import { Card, CardBody, Spinner, Typography } from '@material-tailwind/react';
+import moment from 'moment';
 
 interface Props {
 	title: string;
@@ -70,13 +71,61 @@ export default function AppLayout({
 		},
 	];
 
+	const [timer, setTimer] = useState('');
+
+	if (page.props.auth.user?.current_instance != null) {
+		if (
+			page.props.auth.user?.current_instance.exam.limit != null &&
+			page.props.auth.user?.current_instance.exam.limit > 0
+		) {
+			const form = useForm({
+				current_instance_id: page.props.auth.user?.current_instance.id,
+			});
+
+			var countDownDate = moment(
+				page.props.auth.user?.current_instance.created_at,
+			)
+				.add(page.props.auth.user?.current_instance.exam.limit, 'm')
+				.toDate();
+			// Update the count down every 1 second
+			var x = setInterval(function () {
+				// Get today's date and time
+				var now = new Date().getTime();
+
+				// Find the distance between now and the count down date
+				var distance = countDownDate - now;
+
+				// Time calculations for days, hours, minutes and seconds
+				var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+				var hours = Math.floor(
+					(distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+				);
+				var minutes = Math.floor(
+					(distance % (1000 * 60 * 60)) / (1000 * 60),
+				);
+				var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+				// Display the result in the element with id="demo"
+				setTimer(minutes + 'm ' + seconds + 's ');
+
+				// If the count down is finished, write some text
+				if (distance < 0) {
+					clearInterval(x);
+					setTimer('Expired');
+
+					form.post(route('exam.finish'));
+				}
+			}, 1000);
+		}
+	}
+
 	return (
 		<div>
 			<Head title={title} />
 
 			<Banner />
 
-			<div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+			<div className="min-h-screen bg-gray-100 dark:bg-gray-900 relative">
 				<nav className="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
 					{/* <!-- Primary Navigation Menu --> */}
 					<div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -158,7 +207,8 @@ export default function AppLayout({
 															'admin' && (
 															<>
 																<div className="block px-4 py-2 text-xs text-gray-400">
-																	Manage Classrooms
+																	Manage
+																	Classrooms
 																</div>
 
 																{/* <!-- Classroom Settings --> */}
@@ -187,7 +237,8 @@ export default function AppLayout({
 																		)}
 																	>
 																		Create
-																		New Classroom
+																		New
+																		Classroom
 																	</DropdownLink>
 																) : null}
 
@@ -535,30 +586,45 @@ export default function AppLayout({
 				<main className="md:mx-0 mx-4 relative min-h-full">
 					{children}
 
-					{page.props.auth.user?.current_instance && (<div className="absolute top-5 right-5">
-						<Link href={route('exam.current', { page: 1 })}>
-							<Card className=" max-w-[300px] w-[300px]">
-								<CardBody className="p-4 flex items-center gap-4">
-									<Spinner />
-									<div>
-										<Typography
-											variant="small"
-											className="flex items-center gap-3"
-										>
-											You are currently taking:
-										</Typography>
-										<Typography variant="h6">
-											{
-												page.props.auth.user
-													?.current_instance.exam.name
-											}
-										</Typography>
-									</div>
-								</CardBody>
-							</Card>
-						</Link>
-					</div>)}
+					
 				</main>
+				{page.props.auth.user?.current_instance && (
+						<div className="fixed top-5 right-5">
+							<Link href={route('exam.current', { page: 1 })}>
+								<Card className=" max-w-[300px] w-[300px]">
+									<CardBody className="p-4 flex items-center gap-4">
+										<Spinner />
+										<div>
+											<Typography
+												variant="small"
+												className="flex items-center gap-3"
+											>
+												You are currently taking:
+											</Typography>
+											<Typography variant="h6">
+												{
+													page.props.auth.user
+														?.current_instance.exam
+														.name
+												}
+											</Typography>
+
+											{page.props.auth.user
+												?.current_instance.exam
+												.limit !== null &&
+												page.props.auth.user
+													?.current_instance.exam
+													.limit > 0 && (
+													<Typography variant="h5">
+														{timer} Left
+													</Typography>
+												)}
+										</div>
+									</CardBody>
+								</Card>
+							</Link>
+						</div>
+					)}
 			</div>
 		</div>
 	);

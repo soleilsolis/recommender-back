@@ -26,6 +26,7 @@ export default function CreateExamForm({ examTypes }: Props) {
 		date: '',
 		time: '',
 		attempts: '',
+		limit: '',
 	});
 
 	function createExam() {
@@ -93,13 +94,12 @@ export default function CreateExamForm({ examTypes }: Props) {
 			</div>
 
 			<div className="col-span-6 sm:col-span-4">
-				<InputLabel htmlFor="date" value="Number of Attempts" />
+				<InputLabel htmlFor="attempts" value="Number of Attempts" />
 
 				<Input
 					id="attempts"
 					type="text"
 					value={form.data.attempts}
-					onChange={e => form.setData('attempts', e.currentTarget.value)}
 					crossOrigin={undefined}
 					onInput={e => {
 						let text = e.currentTarget.value.match(
@@ -111,6 +111,26 @@ export default function CreateExamForm({ examTypes }: Props) {
 					}}
 				/>
 				<InputError message={form.errors.attempts} className="mt-2" />
+			</div>
+
+			<div className="col-span-6 sm:col-span-4">
+				<InputLabel htmlFor="limit" value="Time Limit (Minutes)" />
+
+				<Input
+					id="limit"
+					type="text"
+					value={form.data.limit}
+					crossOrigin={undefined}
+					onInput={e => {
+						let text = e.currentTarget.value.match(
+							/^[0-9]{0,10}/g,
+						)
+
+						form.setData('limit', text[0])
+						e.currentTarget.value = text[0]
+					}}
+				/>
+				<InputError message={form.errors.limit} className="mt-2" />
 			</div>
 
 			<div className="col-span-6 sm:col-span-4">

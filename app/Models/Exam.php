@@ -20,6 +20,7 @@ class Exam extends Model
     'attempts',
     'expires_at',
     'team_id',
+    'limit',
   ];
 
   public function examType(): BelongsTo
