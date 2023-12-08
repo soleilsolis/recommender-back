@@ -23,6 +23,12 @@ class DatabaseSeeder extends Seeder
             'type' => 'admin',
         ]);
 
+        $user = \App\Models\User::factory()->withPersonalTeam()->create([
+            'name' => 'Student',
+            'email' => 'student@plpasig.com',
+            'type' => 'student',
+        ]);
+
         $examTypeSeeder = new ExamTypeSeeder();
         $examTypeSeeder->run();
 
