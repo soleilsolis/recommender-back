@@ -260,29 +260,27 @@ class ExamController extends Controller
 
             $description = "";
 
-            if ($percentage > 99) {
+            if ($percentage === 100) {
                 $description = 'You have perfected {categories}!';
             }
 
-            if ($percentage > 85 && $percentage < 99) {
+            if ($percentage > 85 && $percentage <= 99) {
                 $description = 'You are a master in {categories}. Superb!';
             }
 
-            if ($percentage > 50 && $percentage < 85) {
+            if ($percentage >= 50 && $percentage < 85) {
                 $description = "The scores for subject/s {categories} are good. There's still room for improvement!";
             }
 
             if ($percentage < 50) {
                 $description = "Please focus on these areas for next time: {categories}. You have very low mastery on them.";
-                $category = "<span style='color: rgb(244 67 54)'>{$category}</span>";
             }
 
-            $recommendations[$description][] = "<strong>{$category} ({$percentage}%)</strong>";
+            $recommendations[$description][] = "{$category} ({$percentage}%)";
         }
 
         foreach ($recommendations as $recommendation => $value) {
-            $value[array_key_last($value)] = count($value) > 1 ? "and " . $value[array_key_last($value)] : $value[array_key_last($value)];
-            $categories = implode(", ", $value);
+            $categories = implode(",", $value);
             $finalText .= str_replace("{categories}", $categories, $recommendation . "\n\n");
         }
 
