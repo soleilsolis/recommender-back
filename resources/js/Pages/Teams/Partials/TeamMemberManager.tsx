@@ -131,10 +131,10 @@ export default function TeamMemberManager({
         <div>
           <SectionBorder />
 
-          {/* <!-- Add Team Member --> */}
+          {/* <!-- Add Classroom Member --> */}
           <FormSection
             onSubmit={addTeamMember}
-            title={'Add Team Member'}
+            title={'Add Classroom Member'}
             description={
               'Add a new team member to your team, allowing them to collaborate with you.'
             }

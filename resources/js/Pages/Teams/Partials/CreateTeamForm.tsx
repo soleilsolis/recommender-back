@@ -45,7 +45,7 @@ export default function CreateTeamForm() {
       )}
     >
       <div className="col-span-6">
-        <InputLabel value="Team Owner" />
+        <InputLabel value="Classroom Owner" />
 
         <div className="flex items-center mt-2">
           <img
@@ -66,7 +66,7 @@ export default function CreateTeamForm() {
       </div>
 
       <div className="col-span-6 sm:col-span-4">
-        <InputLabel htmlFor="name" value="Team Name" />
+        <InputLabel htmlFor="name" value="Classroom Name" />
         <TextInput
           id="name"
           type="text"
