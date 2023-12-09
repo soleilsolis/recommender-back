@@ -65,8 +65,7 @@ export default function Show({
 		url: '',
 		page: '',
 		value: '',
-		instance_answer_id:
-			instanceAnswers[0] != undefined ? instanceAnswers[0].id : null,
+		instance_answer_id: null,
 	});
 
 	const finishExam = () => {
@@ -77,9 +76,10 @@ export default function Show({
 	};
 
 	useEffect(() => {
+		form.data.instance_answer_id =
+			instanceAnswers[0] != undefined ? instanceAnswers[0].id : null;
 		form.data.value =
 			instanceAnswers[0] != undefined ? instanceAnswers[0].value : null;
-			
 	}, []);
 
 	return (
@@ -221,12 +221,19 @@ export default function Show({
 									{question.data[0].type === 'Written' && (
 										<Textarea
 											label="Answer"
+											value={
+												instanceAnswers[0] != undefined
+													? instanceAnswers[0].value
+													: ''
+											}
 											onChange={event => {
 												form.data.value =
 													event.currentTarget.value;
 											}}
 										>
-											{form.data.value}
+											{instanceAnswers[0] != undefined
+												? instanceAnswers[0].value
+												: ''}
 										</Textarea>
 									)}
 								</CardBody>

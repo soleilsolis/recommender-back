@@ -261,7 +261,7 @@ class ExamController extends Controller
                 InstanceAnswer::create([
                     'question_id' => $question->id,
                     'instance_id' => $instance->id,
-                    'answer_id' => Answer::where('correct', '=', 0)->first()->id
+                    'answer_id' => Answer::where('correct', '=', 0)->first()->id ??= null
                 ]);
             }
         }
