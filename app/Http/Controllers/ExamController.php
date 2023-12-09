@@ -247,10 +247,9 @@ class ExamController extends Controller
 
         $instance = Instance::find($current_instance_id);
 
-    
-        if(!$instance )
-        {
-            return Inertia::location('/exams/student');
+
+        if (!$instance) {
+            return to_route('exams.index.student');
         }
 
         foreach ($instance->exam->questions as $question) {
