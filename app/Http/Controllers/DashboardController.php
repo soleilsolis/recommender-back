@@ -73,6 +73,9 @@ class DashboardController extends Controller
                 $score = 0;
                 $total = 0;
 
+                $instance->score  = 0;
+                $instance->total = 0;
+
                 $radarMap = ExamController::getCategories($instance->instanceAnswers);
 
                 foreach ($radarMap as $map) {
