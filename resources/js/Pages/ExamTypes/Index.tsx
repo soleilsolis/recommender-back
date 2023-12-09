@@ -35,9 +35,7 @@ export default function ExamTypes({ examType }: Props) {
 	const TABLE_HEAD = ['Name', 'Actions'];
 
 	return (
-		<AppLayout
-			title="Exam Types"
-		>
+		<AppLayout title="Exam Types">
 			<div className="py-12">
 				<div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
 					<div className="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
@@ -63,9 +61,6 @@ export default function ExamTypes({ examType }: Props) {
 										</Typography>
 									</div>
 									<div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-										<Button variant="outlined" size="sm">
-											view all
-										</Button>
 										<Button
 											className="flex items-center gap-3"
 											size="sm"

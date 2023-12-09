@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useRoute from '@/Hooks/useRoute';
 import useTypedPage from '@/Hooks/useTypedPage';
 import {
@@ -75,6 +75,12 @@ export default function Show({
 			preserveScroll: true,
 		});
 	};
+
+	useEffect(() => {
+		form.data.value =
+			instanceAnswers[0] != undefined ? instanceAnswers[0].value : null;
+			
+	}, []);
 
 	return (
 		<AppLayout title={`${exam.name}`}>

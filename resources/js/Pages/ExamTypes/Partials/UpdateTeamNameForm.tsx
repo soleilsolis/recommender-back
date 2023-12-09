@@ -32,7 +32,7 @@ export default function UpdateTeamNameForm({ team, permissions }: Props) {
     <FormSection
       onSubmit={updateTeamName}
       title={'Classroom Name'}
-      description={`The team's name and owner information.`}
+      description={`The classroom's name and owner information.`}
       renderActions={
         permissions.canUpdateTeam
           ? () => (

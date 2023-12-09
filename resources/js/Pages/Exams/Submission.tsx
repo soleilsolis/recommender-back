@@ -122,7 +122,7 @@ export default function ShowStudent({
 						</Link>
 
 						<Link href={`/exam/${exam.id}`} className="opacity-60">
-							<span>{exam.id}</span>
+							<span>{exam.name}</span>
 						</Link>
 					</Breadcrumbs>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-5 md:gap-4 mt-6">

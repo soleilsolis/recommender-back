@@ -24,42 +24,52 @@ ChartJS.register(
 	Legend,
 );
 
-export const options = {
-	responsive: true,
-	plugins: {
-		legend: {
-			position: 'top' as const,
-		},
-		title: {
-			display: true,
-			text: 'Student Passing Rate',
-		},
-	},
-};
-
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
-
-export const data = {
-	labels,
-	datasets: [
-		{
-			label: 'Failed',
-			data: labels.map(() =>
-				faker.datatype.number({ min: 0, max: 1000 }),
-			),
-			backgroundColor: 'rgba(255, 99, 132, 0.5)',
-		},
-		{
-			label: 'Passed',
-			data: labels.map(() =>
-				faker.datatype.number({ min: 0, max: 1000 }),
-			),
-			backgroundColor: 'rgba(53, 162, 235, 0.5)',
-		},
-	],
-};
-export default function Dashboard() {
+interface Props {
+	examsCreated: any;
+	failedAttempts: any;
+	examsTaken: any;
+	students: any;
+	exams: any,
+}
+export default function Dashboard({
+	examsCreated,
+	failedAttempts,
+	examsTaken,
+	students,
+	exams,
+}: Props) {
 	const page = useTypedPage();
+
+	const options = {
+		responsive: true,
+		plugins: {
+			legend: {
+				position: 'top' as const,
+			},
+			title: {
+				display: true,
+				text: 'Student Passing for the past 5 Exams',
+			},
+		},
+	};
+
+	const labels = exams.reverse().slice(exams.length-5).map(exam => exam.name);
+
+	const data = {
+		labels,
+		datasets: [
+			{
+				label: 'Failed',
+				data:  exams.reverse().slice(exams.length-5).map(exam => exam.failed),
+				backgroundColor: 'rgba(255, 99, 132, 0.5)',
+			},
+			{
+				label: 'Passed',
+				data:  exams.reverse().slice(exams.length-5).map(exam => exam.passed),
+				backgroundColor: 'rgba(53, 162, 235, 0.5)',
+			},
+		],
+	};
 	return (
 		<AppLayout
 			title="Dashboard"
@@ -75,7 +85,7 @@ export default function Dashboard() {
 						<Card>
 							<CardBody>
 								<Typography variant="h3" color="black">
-									20
+									{students}
 								</Typography>
 								<Typography variant="h6">Students</Typography>
 							</CardBody>
@@ -83,7 +93,7 @@ export default function Dashboard() {
 						<Card>
 							<CardBody>
 								<Typography variant="h3" color="black">
-									5
+									{examsCreated}
 								</Typography>
 								<Typography variant="h6">Exams</Typography>
 							</CardBody>
@@ -91,7 +101,7 @@ export default function Dashboard() {
 						<Card>
 							<CardBody>
 								<Typography variant="h3" color="black">
-									200
+									{examsTaken}
 								</Typography>
 								<Typography variant="h6">
 									Total Exams Taken
@@ -101,15 +111,15 @@ export default function Dashboard() {
 						<Card>
 							<CardBody>
 								<Typography variant="h3" color="black">
-									500
+									{failedAttempts}
 								</Typography>
 								<Typography variant="h6">
-									Recommendations
+									Failed Attempts
 								</Typography>
 							</CardBody>
 						</Card>
 					</div>
-					<Bar className='my-5' options={options} data={data} />;
+					<Bar className="my-5" options={options} data={data} />;
 				</div>
 			</div>
 		</AppLayout>

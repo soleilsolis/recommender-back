@@ -62,7 +62,7 @@ export default function CreateExamForm({ examTypes }: Props) {
 			)}
 		>
 			<div className="col-span-6 sm:col-span-4">
-				<InputLabel htmlFor="name" value="Name" />
+				<InputLabel htmlFor="name" value="Examination Name" />
 
 				<Input
 					id="name"
@@ -75,7 +75,7 @@ export default function CreateExamForm({ examTypes }: Props) {
 				<InputError message={form.errors.name} className="mt-2" />
 			</div>
 			<div className="col-span-6 sm:col-span-4 mt-2">
-				<InputLabel htmlFor="exam_type_id" value="Exam Type" />
+				<InputLabel htmlFor="exam_type_id" value="Examination Type" />
 				<Select
 					id="exam_type_id"
 					value={form.data.exam_type_id}

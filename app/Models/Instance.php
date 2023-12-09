@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Instance extends Model
 {
@@ -21,6 +22,11 @@ class Instance extends Model
   public function instanceAnswers()
   {
     return $this->hasMany(InstanceAnswer::class);
+  }
+
+  public function questions(): HasManyThrough
+  {
+    return $this->hasManyThrough(Question::class, Exam::class);
   }
 
   public function user()

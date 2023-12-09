@@ -39,6 +39,7 @@ import {
 	Legend,
 } from 'chart.js';
 import { Radar } from 'react-chartjs-2';
+import moment from 'moment';
 
 ChartJS.register(
 	RadialLinearScale,
@@ -99,7 +100,7 @@ export default function ShowStudent({
 							<span>Exams</span>
 						</Link>
 						<Link href={`/exam/${exam.id}`}>
-							<span>{exam.id}</span>
+							<span>{exam.name}</span>
 						</Link>
 					</Breadcrumbs>
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-x-0 gap-y-5 md:gap-4 mt-6">
@@ -122,127 +123,149 @@ export default function ShowStudent({
 						</div>
 					</div>
 
-					{exam.attempts - exam.instances.length != 0 && (
-						<Link href={route('exam.take', { id: exam.id })}>
-							<Button
-								color="green"
-								size="lg"
-								className="flex items-center gap-3 my-5"
-							>
-								<PlusIcon className="h-5 w-5" /> Take Exam
-							</Button>
-						</Link>
-					)}
-
-					<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-4 gap-y-2">
-						<Card className=" h-max my-5">
-							<CardBody className="h-max text-center">
-								<Typography
-									variant="h3"
-									color={
-										(score / total) * 100 < 50
-											? 'red'
-											: 'green'
-									}
+					{exam.attempts - exam.instances.length != 0 &&
+						moment(exam.expires_at) > moment() && (
+							<Link href={route('exam.take', { id: exam.id })}>
+								<Button
+									color="green"
+									size="lg"
+									className="flex items-center gap-3 my-5"
 								>
-									Score: {score} / {total}
-								</Typography>
-							</CardBody>
-						</Card>
+									<PlusIcon className="h-5 w-5" /> Take Exam
+								</Button>
+							</Link>
+						)}
 
-						<Card className=" h-max my-5">
-							<CardBody className="h-max text-center">
-								<Typography variant="h3" color="black">
-									Attempts: {exam.instances.length} /{' '}
-									{exam.attempts}
-								</Typography>
-							</CardBody>
-						</Card>
-					</div>
+					{moment(exam.expires_at) < moment() &&
+						exam.instances.length != 0 && (
+							<>
+								<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 md:gap-4 gap-y-2">
+									<Card className=" h-max my-5">
+										<CardBody className="h-max text-center">
+											<Typography
+												variant="h3"
+												color={
+													(score / total) * 100 < 50
+														? 'red'
+														: 'green'
+												}
+											>
+												Score: {score} / {total}
+											</Typography>
+										</CardBody>
+									</Card>
 
-					<Typography variant="h3" className="my-5 ">
-						Stats
-					</Typography>
-
-					<Card className="mb-2">
-						<CardBody>
-							<Typography
-								variant="h4"
-								color="black"
-								className="mb-6"
-							>
-								By Category
-							</Typography>
-							<div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-x-0 gap-y-6">
-								<div>
-									<div>
-										{Object.values(radarMap).map(
-											(category, index) => {
-								
-												return (
-													<>
-														<Typography
-															variant="h5"
-															className="mb-2"
-															color={
-																(category.correct /
-																	category.total) *
-																	100 <
-																50
-																	? 'red'
-																	: 'black'
-															}
-														>
-															{
-																Object.keys(
-																	radarMap,
-																)[index]
-															}{' '}
-															: {category.correct} /{category.total}
-														</Typography>
-													</>
-												);
-											},
-										)}
-									</div>
+									<Card className=" h-max my-5">
+										<CardBody className="h-max text-center">
+											<Typography
+												variant="h3"
+												color="black"
+											>
+												Attempts:{' '}
+												{exam.instances.length} /{' '}
+												{exam.attempts}
+											</Typography>
+										</CardBody>
+									</Card>
 								</div>
-								<div>
-									<Radar
-										data={radarData}
-										options={radarOptions}
-									/>
-								</div>
-							</div>
-						</CardBody>
-					</Card>
-					<Typography variant="h3" color="black" className="my-5">
-						Recommendations
-					</Typography>
-					<Card className="my-5">
-						<CardBody>
-							{instances.length > 0 &&
-								instances.reverse().map((instance, index) => (
-									<>
+
+								<Typography variant="h3" className="my-5 ">
+									Stats
+								</Typography>
+
+								<Card className="mb-2">
+									<CardBody>
 										<Typography
 											variant="h4"
 											color="black"
 											className="mb-6"
 										>
-											Attempt #{index + 1}
+											By Category
 										</Typography>
-										<Typography
-											variant="lead"
-											color="black"
-											className="mb-6 whitespace-pre-line"
-										>
-											{ReactHtmlParser(
-												instance.recommendation_auto,
-											)}
-										</Typography>
-									</>
-								))}{' '}
-						</CardBody>
-					</Card>
+										<div className="grid grid-cols-1 md:grid-cols-2 md:gap-4 gap-x-0 gap-y-6">
+											<div>
+												<div>
+													{Object.values(
+														radarMap,
+													).map((category, index) => {
+														return (
+															<>
+																<Typography
+																	variant="h5"
+																	className="mb-2"
+																	color={
+																		(category.correct /
+																			category.total) *
+																			100 <
+																		50
+																			? 'red'
+																			: 'black'
+																	}
+																>
+																	{
+																		Object.keys(
+																			radarMap,
+																		)[index]
+																	}{' '}
+																	:{' '}
+																	{
+																		category.correct
+																	}{' '}
+																	/
+																	{
+																		category.total
+																	}
+																</Typography>
+															</>
+														);
+													})}
+												</div>
+											</div>
+											<div>
+												<Radar
+													data={radarData}
+													options={radarOptions}
+												/>
+											</div>
+										</div>
+									</CardBody>
+								</Card>
+								<Typography
+									variant="h3"
+									color="black"
+									className="my-5"
+								>
+									Recommendations
+								</Typography>
+								<Card className="my-5">
+									<CardBody>
+										{instances.length > 0 &&
+											instances
+												.reverse()
+												.map((instance, index) => (
+													<>
+														<Typography
+															variant="h4"
+															color="black"
+															className="mb-6"
+														>
+															Attempt #{index + 1}
+														</Typography>
+														<Typography
+															variant="lead"
+															color="black"
+															className="mb-6 whitespace-pre-line"
+														>
+															{ReactHtmlParser(
+																instance.recommendation_auto,
+															)}
+														</Typography>
+													</>
+												))}{' '}
+									</CardBody>
+								</Card>
+							</>
+						)}
 				</div>
 			</div>
 		</AppLayout>

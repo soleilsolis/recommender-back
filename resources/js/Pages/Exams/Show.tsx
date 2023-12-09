@@ -93,7 +93,7 @@ export default function Show({ exam }: Props) {
 							<span>Exams</span>
 						</Link>
 						<Link href={`/exam/${exam.id}`}>
-							<span>{exam.id}</span>
+							<span>{exam.name}</span>
 						</Link>
 					</Breadcrumbs>
 					<Typography variant="h2" color="blue-gray">

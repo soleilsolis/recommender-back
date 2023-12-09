@@ -58,11 +58,7 @@ export default function Exams({ paginator }: Props) {
 											Latest Exams
 										</Typography>
 									</div>
-									<div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-										<Button variant="outlined" size="sm">
-											view all
-										</Button>
-									</div>
+									<div className="flex shrink-0 flex-col gap-2 sm:flex-row"></div>
 								</div>
 								<div className="flex flex-col items-center justify-between gap-4 md:flex-row">
 									<div className="w-full md:w-72">

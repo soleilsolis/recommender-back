@@ -7,9 +7,13 @@ import FormSection from '@/Components/FormSection';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
 import PrimaryButton from '@/Components/PrimaryButton';
-import TextInput from '@/Components/TextInput';
 import classNames from 'classnames';
-import { Input, Option, Select, Textarea } from '@material-tailwind/react';
+import {
+	Input,
+	Option,
+	Select,
+	Textarea,
+} from '@material-tailwind/react';
 import { ExamType } from '@/types';
 import moment from 'moment';
 interface Props {
@@ -20,6 +24,9 @@ interface Props {
 export default function EditExamForm({ examTypes, exam }: Props) {
 	const route = useRoute();
 	const page = useTypedPage();
+
+	
+
 	const form = useForm({
 		id: exam.id,
 		name: exam.name,
@@ -64,7 +71,7 @@ export default function EditExamForm({ examTypes, exam }: Props) {
 			)}
 		>
 			<div className="col-span-6 sm:col-span-4">
-				<InputLabel htmlFor="name" value="Name" />
+				<InputLabel htmlFor="name" value="Examination Name" />
 
 				<Input
 					id="name"
@@ -77,7 +84,7 @@ export default function EditExamForm({ examTypes, exam }: Props) {
 				<InputError message={form.errors.name} className="mt-2" />
 			</div>
 			<div className="col-span-6 sm:col-span-4 mt-2">
-				<InputLabel htmlFor="exam_type_id" value="Exam Type" />
+				<InputLabel htmlFor="exam_type_id" value="Examination Type" />
 				<Select
 					id="exam_type_id"
 					value={exam.exam_type_id}
@@ -125,12 +132,10 @@ export default function EditExamForm({ examTypes, exam }: Props) {
 					value={form.data.limit}
 					crossOrigin={undefined}
 					onInput={e => {
-						let text = e.currentTarget.value.match(
-							/^[0-9]{0,10}/g,
-						)
+						let text = e.currentTarget.value.match(/^[0-9]{0,10}/g);
 
-						form.setData('limit', text[0])
-						e.currentTarget.value = text[0]
+						form.setData('limit', text[0]);
+						e.currentTarget.value = text[0];
 					}}
 				/>
 				<InputError message={form.errors.limit} className="mt-2" />

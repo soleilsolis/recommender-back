@@ -31,7 +31,7 @@ export default function Edit({ examTypes, exam }: Props) {
 							<span>Exams</span>
 						</Link>
 						<Link href={`/exam/${exam.id}`}>
-							<span>{exam.id}</span>
+							<span>{exam.name}</span>
 						</Link>
 						<Link href="#">Edit</Link>
 					</Breadcrumbs>
@@ -44,3 +44,4 @@ export default function Edit({ examTypes, exam }: Props) {
 		</AppLayout>
 	);
 }
+ 

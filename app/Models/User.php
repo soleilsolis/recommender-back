@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
@@ -63,5 +64,10 @@ class User extends Authenticatable
     public function currentInstance(): BelongsTo
     {
         return $this->belongsTo(Instance::class, 'current_instance_id', 'id');
+    }
+
+    public function instances(): HasMany
+    {
+        return $this->hasMany(Instance::class);
     }
 }

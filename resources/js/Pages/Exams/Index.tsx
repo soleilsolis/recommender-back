@@ -63,9 +63,7 @@ export default function Exams({ paginator }: Props) {
 										</Typography>
 									</div>
 									<div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-										<Button variant="outlined" size="sm">
-											view all
-										</Button>
+									
 										<NavLink href={route('exam.create')}>
 											<Button
 												className="flex items-center gap-3"

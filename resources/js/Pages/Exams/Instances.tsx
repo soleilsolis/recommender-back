@@ -59,16 +59,9 @@ export default function Attempts({ paginator, exam }: Props) {
 										<Typography
 											color="gray"
 											className="mt-1 font-normal"
-										>
-											
-										</Typography>
+										></Typography>
 									</div>
-									<div className="flex shrink-0 flex-col gap-2 sm:flex-row">
-										<Button variant="outlined" size="sm">
-											view all
-										</Button>
-							
-									</div>
+									<div className="flex shrink-0 flex-col gap-2 sm:flex-row"></div>
 								</div>
 								<div className="flex flex-col items-center justify-between gap-4 md:flex-row">
 									<div className="w-full md:w-72">
@@ -139,7 +132,8 @@ export default function Attempts({ paginator, exam }: Props) {
 																color="blue-gray"
 																className="font-bold"
 															>
-																{score} / {total}
+																{score} /{' '}
+																{total}
 															</Typography>
 														</td>
 

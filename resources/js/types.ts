@@ -8,6 +8,7 @@ export interface Team {
 	personal_team: boolean;
 	created_at: DateTime;
 	updated_at: DateTime;
+	owner: Object;
 }
 
 export interface User {
@@ -46,6 +47,7 @@ export interface Auth {
 		User & {
 			all_teams?: Team[];
 			current_team?: Team;
+			team_role?: Role;
 		}
 	>;
 }

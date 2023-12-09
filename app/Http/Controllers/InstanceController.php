@@ -31,7 +31,7 @@ class InstanceController extends Controller
             $instances =  $instances->paginate($instances->count());
         }
 
-        $instances = $this->calculator($instances);
+        $instances = $this->getCategories($instances);
 
         $paginator = $instances;
         $exam = Exam::findOrFail($request->exam_id);
@@ -39,7 +39,7 @@ class InstanceController extends Controller
         return Inertia::render('Exams/Instances', compact('paginator', 'exam'));
     }
 
-    public function calculator($instances)
+    public function getCategories($instances)
     {
         foreach ($instances as $instance) {
             $instance->score = 0;
@@ -102,7 +102,7 @@ class InstanceController extends Controller
         $score = 0;
         $total = 0;
 
-        $radarMap = ExamController::calculator($instanceAnswers);
+        $radarMap = ExamController::getCategories($instanceAnswers);
 
         foreach ($radarMap as $map) {
             $score += $map['correct'];

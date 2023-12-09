@@ -49,8 +49,7 @@ class ExamController extends Controller
                 'team_id',
                 '=',
                 $request->user()->currentTeam->id
-            ],
-            ['expires_at', '>=', now()]
+            ]
         ])->orderBy('created_at', 'desc')->paginate(15);
 
         foreach ($paginator as $page) {
@@ -125,7 +124,7 @@ class ExamController extends Controller
         $score = 0;
         $total = 0;
 
-        $radarMap = $exam->instances->first() ? $this->calculator($exam->instances->first()->instanceAnswers) : new Collection();
+        $radarMap = $exam->instances->first() ? $this->getCategories($exam->instances->first()->instanceAnswers) : new Collection();
 
         foreach ($radarMap as $map) {
             $score += $map['correct'];
@@ -206,7 +205,7 @@ class ExamController extends Controller
         ]);
     }
 
-    public static function calculator($instanceAnswers)
+    public static function getCategories($instanceAnswers)
     {
         $map = array();
 
@@ -269,7 +268,7 @@ class ExamController extends Controller
 
         $instanceAnswers = InstanceAnswer::where('instance_id', '=',  $instance->id)->get();
 
-        $map = $this->calculator($instanceAnswers);
+        $map = $this->getCategories($instanceAnswers);
 
         $recommendations = [];
 
@@ -312,55 +311,6 @@ class ExamController extends Controller
 
         return to_route('exams.show.student', ['id' => $instance->exam->id]);
     }
-
-    public function test(Request $request)
-    {
-        $instance = Instance::findOrFail($request->id);
-
-        $instanceAnswers = InstanceAnswer::where('instance_id', '=',  $instance->id)->get();
-
-        $map = $this->calculator($instanceAnswers);
-
-        dd($map);
-
-        foreach ($map as $category => $score) {
-            $percentage = number_format(ceil($score['correct'] / ($score['total']) * 100));
-
-            $description = "";
-
-            if ($percentage > 99) {
-                $description = 'You have perfected {categories}!';
-            }
-
-            if ($percentage > 85 && $percentage < 99) {
-                $description = 'You are a master in {categories}. Superb!';
-            }
-
-            if ($percentage > 49 && $percentage < 85) {
-                $description = "The scores for subject/s {categories} are good. There's still room for improvement!";
-            }
-
-            if ($percentage < 50) {
-                $description = "Please focus on these areas for next time: {categories}. You have very low mastery on them.";
-                $category = "<span style='color: rgb(244 67 54)'>{$category}</span>";
-            }
-
-            $recommendations[$description][] = "<strong>{$category} ({$percentage}%)</strong>";
-        }
-
-        $finalText = "";
-
-        foreach ($recommendations as $recommendation => $value) {
-            $value[array_key_last($value)] = count($value) > 1 ? "and " . $value[array_key_last($value)] : $value[array_key_last($value)];
-            $categories = implode(", ", $value);
-            $finalText .= str_replace("{categories}", $categories, $recommendation . "\n\n");
-        }
-
-        $instance->finished_at = now();
-        $instance->recommendation_auto = $finalText;
-        $instance->save();
-    }
-
     /**
      * Show the form for editing the specified resource.
      */
@@ -380,6 +330,23 @@ class ExamController extends Controller
         ])->findOrFail($request->id);
 
         return Inertia::render('Exams/Edit', compact('examTypes', 'exam'));
+    }
+
+    public function stats(Request $request)
+    {
+        $team = $request->user()->currentTeam();
+        $exam = Exam::findOrFail($request->id);
+
+        if ($exam->team->id !== $team->id || !$request->user()->ownsTeam($team)) {
+            abort(404);
+        }
+
+        $questions = $exam->questions;
+        $questions->answers = $questions->answers;
+        $questions->answers->instanceAnswers = $questions->answers->instanceAnswers;
+        $questions->instanceAnswersCount = $questions->instanceAnswers->count();
+        
+        return Inertia::render('Exams/QuestionStats');
     }
 
     /**

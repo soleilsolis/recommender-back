@@ -4,14 +4,15 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-use App\Http\Controllers\AnswerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ExamController;
 use App\Http\Controllers\ExamTypeController;
-use App\Http\Controllers\Instance;
 use App\Http\Controllers\InstanceAnswerController;
 use App\Http\Controllers\InstanceController;
 use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\DashboardController;
+use SebastianBergmann\CodeCoverage\Report\Html\Dashboard;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -37,9 +38,7 @@ Route::middleware([
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'dashboard'])->name('dashboard');
 
     Route::get('/test', function () {
         return Inertia::render('Test');
@@ -48,23 +47,13 @@ Route::middleware([
     Route::get('/examTypes', [ExamTypeController::class, 'index'])->name('examTypes');
     Route::get('/examTypes/create', [ExamTypeController::class, 'create'])->name('examTypes.create');
 
-
-    Route::controller(AnswerController::class)->group(function () {
-        Route::get('/answers', 'index');
-        Route::get('/answer/{id}', 'show');
-        Route::post('/answer', 'store');
-        Route::put('/answer/{id}/action', 'action');
-        Route::patch('/answer/{id}', 'update');
-        Route::delete('/answer/{id}', 'destroy');
-    });
-
     Route::controller(CategoryController::class)->group(function () {
         Route::get('/categories', 'index');
         Route::get('/category/{id}', 'show');
         Route::post('/category', 'store')->name('category.store');
         Route::put('/category/{id}/action', 'action');
         Route::patch('/category/{id}', 'update');
-        Route::delete('/category/{id}', 'destroy');
+        Route::delete('/category', 'destroy')->name('category.delete');
     });
 
     Route::controller(ExamController::class)->group(function () {

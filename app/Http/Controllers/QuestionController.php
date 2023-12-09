@@ -43,7 +43,7 @@ class QuestionController extends Controller
             $question->category_id = $submission->category_id;
             $question->exam_id = $submission->exam_id;
             $question->type = $submission->type;
-            $question->worth = $submission->worth;
+            $question->worth = !$submission->worth ? 1 : $submission->worth;
 
             $question->save();
 
