@@ -63,7 +63,7 @@ export default function Dashboard({
 				data: instances
 					.reverse()
 					.slice(instances.length - 5)
-					.map(instance => instance.total - instance.correct),
+					.map(instance => instance.total - instance.score),
 
 				backgroundColor: 'rgba(255, 99, 132, 0.5)',
 			},
@@ -72,7 +72,7 @@ export default function Dashboard({
 				data: instances
 					.reverse()
 					.slice(instances.length - 5)
-					.map(instance => instance.correct),
+					.map(instance => instance.score),
 				backgroundColor: 'rgba(53, 162, 235, 0.5)',
 			},
 		],
