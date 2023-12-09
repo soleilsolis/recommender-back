@@ -1,1 +1,0 @@
-import{j as t}from"./app.0076aeba.js";import{t as i}from"./transition.1573de6f.js";function n({on:a,className:e,children:r}){return t("div",{className:e,children:t(i,{show:a,leave:"transition ease-in duration-1000","leave-from-class":"opacity-100",leaveTo:"opacity-0",children:t("div",{className:"text-sm text-gray-600 dark:text-gray-400",children:r})})})}export{n as A};

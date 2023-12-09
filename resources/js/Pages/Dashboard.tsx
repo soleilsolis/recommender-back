@@ -48,7 +48,7 @@ export default function Dashboard({
 			},
 			title: {
 				display: true,
-				text: 'Student Passing for the past 5 Exams',
+				text: 'Student Passing Rate for the past 5 Exams',
 			},
 		},
 	};
