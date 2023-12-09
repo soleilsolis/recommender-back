@@ -263,6 +263,25 @@ export default function ShowStudent({
 													</>
 												))}{' '}
 									</CardBody>
+
+									{instances.length > 0 && (
+										<>
+											<Typography
+												variant="h4"
+												color="black"
+												className="mb-6"
+											>
+												Personal Recommendation
+											</Typography>
+											<Typography
+												variant="lead"
+												color="black"
+												className="mb-6 whitespace-pre-line"
+											>
+												{instances[0].recommendation}
+											</Typography>
+										</>
+									)}
 								</Card>
 							</>
 						)}
