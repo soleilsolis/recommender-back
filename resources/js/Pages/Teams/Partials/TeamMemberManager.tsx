@@ -268,7 +268,7 @@ export default function TeamMemberManager({
           <div className="mt-10 sm:mt-0" />
 
           <ActionSection
-            title={'Pending Team Invitations'}
+            title={'Pending Classroom Invitations'}
             description={
               'These people have been invited to your classroom and have been sent an invitation email. They may join the classroom by accepting the email invitation.'
             }
